@@ -35,6 +35,7 @@ controle de status e auditoria de mudanças, seguindo boas práticas e organiza�
 ├── frontend/   # App React Native (Expo)
 └── README.md
 
+
 ## 📁 Status
 
 Em desenvolvimento
