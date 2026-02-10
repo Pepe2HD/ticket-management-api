@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -45,5 +46,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relacionamento: Tickets criados por este usuário (como solicitante).
+     */
+    public function ticketsSolicitados(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'solicitante_id');
+    }
+
+    /**
+     * Relacionamento: Tickets atribuídos a este usuário (como responsável).
+     */
+    public function ticketsResponsaveis(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'responsavel_id');
+    }
+
+    /**
+     * Relacionamento: Histórico de alterações de status realizadas por este usuário.
+     */
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(TicketStatusHistory::class);
     }
 }

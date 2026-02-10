@@ -47,6 +47,33 @@ class Ticket extends Model
     }
 
     /**
+     * Relacionamento: Usuário que abriu o chamado (solicitante).
+     */
+    public function solicitante(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'solicitante_id');
+    }
+
+    /**
+     * Relacionamento: Usuário responsável pelo chamado.
+     */
+    public function responsavel(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsavel_id');
+    }
+
+    /**
+     * Relacionamento: Histórico de mudanças de status.
+     * 
+     * Nota: Este relacionamento pressupõe a existência de uma tabela
+     * 'ticket_status_histories' que ainda precisa ser criada.
+     */
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(TicketStatusHistory::class);
+    }
+
+    /**
      * Scopes para facilitar queries comuns.
      */
     public function scopeStatus($query, TicketStatus $status)

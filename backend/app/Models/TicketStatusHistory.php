@@ -37,4 +37,20 @@ class TicketStatusHistory extends Model
             'para' => TicketStatus::class,
         ];
     }
+
+    /**
+     * Relacionamento: Ticket ao qual este histórico pertence.
+     */
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class);
+    }
+
+    /**
+     * Relacionamento: Usuário que realizou a mudança de status.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
