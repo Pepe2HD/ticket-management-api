@@ -19,8 +19,16 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'is_admin' => $this->is_admin,
-            'email_verified_at' => $this->email_verified_at,
-            'created_at' => $this->created_at,
+            'email_verified_at' => $this->email_verified_at?->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            
+            // Relacionamentos opcionais (carregados sob demanda)
+            'tickets_solicitados' => TicketResource::collection(
+                $this->whenLoaded('ticketsSolicitados')
+            ),
+            'tickets_responsaveis' => TicketResource::collection(
+                $this->whenLoaded('ticketsResponsaveis')
+            ),
         ];
     }
 }
