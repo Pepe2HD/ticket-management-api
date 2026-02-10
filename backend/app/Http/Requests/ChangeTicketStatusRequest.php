@@ -49,7 +49,7 @@ class ChangeTicketStatusRequest extends FormRequest
         
         $ticket = $this->route('ticket');
 
-        if ($this->status === TicketStatus::RESOLVIDO->value && $ticket && !$ticket->isResolvido()) {
+        if ($this->status === TicketStatus::RESOLVIDO->value && $ticket && !$ticket->isStatus(TicketStatus::RESOLVIDO)) {
             $this->merge([
                 'resolved_at' => now(),
             ]);
