@@ -17,7 +17,7 @@ return new class extends Migration
             TicketStatus::cases()
         );
 
-        Schema::create('ticket_status_histories', function (Blueprint $table) {
+        Schema::create('ticket_status_histories', function (Blueprint $table) use ($statusValues) {
             $table->id();
             
             $table->foreignId('ticket_id')
