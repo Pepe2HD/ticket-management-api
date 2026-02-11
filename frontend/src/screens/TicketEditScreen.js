@@ -39,7 +39,7 @@ export default function TicketEditScreen({ route, navigation }) {
         setTicket(data);
         setTitulo(data.titulo || '');
         setDescricao(data.descricao || '');
-        setPrioridade(data.prioridade || 'BAIXA');
+        setPrioridade(data.prioridade?.value || data.prioridade || 'BAIXA');
       } catch (err) {
         setError(err?.message || 'Failed to load ticket');
       } finally {
@@ -86,7 +86,7 @@ export default function TicketEditScreen({ route, navigation }) {
     );
   }
 
-  const isEditable = ticket?.status === 'ABERTO';
+  const isEditable = (ticket?.status?.value || ticket?.status) === 'ABERTO';
 
   return (
     <ScreenContainer contentStyle={styles.screen}>

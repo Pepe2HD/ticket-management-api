@@ -63,9 +63,10 @@ export default function TicketDetailsScreen({ route, navigation }) {
     });
   }, [navigation]);
 
+  const statusValue = ticket?.status?.value || ticket?.status;
   const canEdit = Boolean(
     ticket &&
-      ticket.status === 'ABERTO' &&
+      statusValue === 'ABERTO' &&
       (isAdmin || ticket.solicitante?.id === user?.id || ticket.responsavel?.id === user?.id)
   );
 
@@ -185,7 +186,7 @@ export default function TicketDetailsScreen({ route, navigation }) {
                   <AppButton
                     label="Alterar status"
                     variant="ghost"
-                    onPress={() => navigation.navigate('TicketStatus', { ticketId, currentStatus: ticket.status })}
+                    onPress={() => navigation.navigate('TicketStatus', { ticketId, currentStatus: statusValue })}
                     containerStyle={styles.secondaryAction}
                     labelStyle={styles.secondaryActionText}
                   />

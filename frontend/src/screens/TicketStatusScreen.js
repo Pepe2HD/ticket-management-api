@@ -25,14 +25,14 @@ export default function TicketStatusScreen({ route, navigation }) {
   const { token, user, isAdmin } = useAuth();
   const { ticketId, currentStatus } = route.params || {};
   const [ticket, setTicket] = useState(null);
-  const [status, setStatus] = useState(currentStatus || 'ABERTO');
+  const [status, setStatus] = useState(currentStatus?.value || currentStatus || 'ABERTO');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (currentStatus) {
-      setStatus(currentStatus);
+      setStatus(currentStatus?.value || currentStatus);
     }
   }, [currentStatus]);
 
@@ -79,7 +79,13 @@ export default function TicketStatusScreen({ route, navigation }) {
     }
   };
 
-  const currentLabel = ticket?.status || currentStatus || '---';
+  const currentLabel =
+    ticket?.status?.label ||
+    ticket?.status?.value ||
+    currentStatus?.label ||
+    currentStatus?.value ||
+    currentStatus ||
+    '---';
   const showResolved = status === 'RESOLVIDO';
   const showCanceled = status === 'CANCELADO';
 

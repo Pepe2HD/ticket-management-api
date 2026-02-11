@@ -21,7 +21,7 @@ export default function Timeline({ items }) {
           <View style={styles.dot} />
           <View style={styles.card}>
             <Text style={styles.title}>
-              {`${item.de || 'START'} -> ${item.para}`}
+              {`${item.de?.label || item.de?.value || item.de || 'START'} -> ${item.para?.label || item.para?.value || item.para}`}
             </Text>
             <Text style={styles.meta}>By {item.user?.name || 'System'}</Text>
             <Text style={styles.meta}>{formatDate(item.created_at)}</Text>
