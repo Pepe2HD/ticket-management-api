@@ -64,6 +64,7 @@ export default function TicketDetailsScreen({ route, navigation }) {
   }, [navigation]);
 
   const statusValue = ticket?.status?.value || ticket?.status;
+  const isResolved = statusValue === 'RESOLVIDO';
   const canEdit = Boolean(
     ticket &&
       statusValue === 'ABERTO' &&
@@ -187,8 +188,15 @@ export default function TicketDetailsScreen({ route, navigation }) {
                     label="Alterar status"
                     variant="ghost"
                     onPress={() => navigation.navigate('TicketStatus', { ticketId, currentStatus: statusValue })}
-                    containerStyle={styles.secondaryAction}
-                    labelStyle={styles.secondaryActionText}
+                    disabled={isResolved}
+                    containerStyle={[
+                      styles.secondaryAction,
+                      isResolved && styles.secondaryActionDisabled
+                    ]}
+                    labelStyle={[
+                      styles.secondaryActionText,
+                      isResolved && styles.secondaryActionTextDisabled
+                    ]}
                   />
                 ) : null}
                 <AppButton
@@ -352,6 +360,13 @@ const styles = StyleSheet.create({
   secondaryActionText: {
     color: palette.darkGreen,
     fontWeight: '700'
+  },
+  secondaryActionDisabled: {
+    borderColor: colors.border,
+    backgroundColor: '#EEF2EE'
+  },
+  secondaryActionTextDisabled: {
+    color: colors.muted
   },
   deleteAction: {
     borderColor: colors.danger,

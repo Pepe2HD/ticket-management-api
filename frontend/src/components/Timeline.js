@@ -11,7 +11,7 @@ const formatDate = (value) => {
 
 export default function Timeline({ items }) {
   if (!items || items.length === 0) {
-    return <Text style={styles.empty}>No history yet</Text>;
+    return <Text style={styles.empty}>Sem histórico</Text>;
   }
 
   return (
@@ -21,9 +21,9 @@ export default function Timeline({ items }) {
           <View style={styles.dot} />
           <View style={styles.card}>
             <Text style={styles.title}>
-              {`${item.de?.label || item.de?.value || item.de || 'START'} -> ${item.para?.label || item.para?.value || item.para}`}
+              {`${item.de?.label || item.de?.value || item.de || 'INÍCIO'} -> ${item.para?.label || item.para?.value || item.para}`}
             </Text>
-            <Text style={styles.meta}>By {item.user?.name || 'System'}</Text>
+            <Text style={styles.meta}>Por {item.user?.name || 'Sistema'}</Text>
             <Text style={styles.meta}>{formatDate(item.created_at)}</Text>
           </View>
         </View>
