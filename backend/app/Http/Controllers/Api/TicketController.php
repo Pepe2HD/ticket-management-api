@@ -51,8 +51,20 @@ class TicketController extends Controller
             $query->where('prioridade', $request->prioridade);
         }
 
-        // Ordenação por data de criação (mais recentes primeiro)
-        $tickets = $query->orderBy('created_at', 'desc')->get();
+        // Busca textual por titulo ou descricao
+        if ($request->has('q') && $request->q) {
+            $search = trim($request->q);
+            $query->where(function ($q) use ($search) {
+                $q->where('titulo', 'like', "%{$search}%")
+                  ->orWhere('descricao', 'like', "%{$search}%");
+            });
+        }
+
+        // Ordenação por prioridade de status e data de criação
+        $tickets = $query
+            ->orderByRaw("CASE status WHEN 'ABERTO' THEN 1 WHEN 'EM_ANDAMENTO' THEN 2 WHEN 'RESOLVIDO' THEN 3 ELSE 4 END")
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return TicketResource::collection($tickets);
     }
@@ -169,7 +181,7 @@ class TicketController extends Controller
     /**
      * Remove (soft delete) um ticket.
      * 
-     * Apenas tickets com status ABERTO podem ser deletados
+        * Solicitante pode deletar o próprio ticket, admin pode deletar qualquer ticket
      * Exclusão lógica (soft delete) - dados não são perdidos
      */
     public function destroy(Ticket $ticket): JsonResponse
