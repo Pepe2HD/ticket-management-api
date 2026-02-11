@@ -16,8 +16,16 @@ class TicketStatusHistoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'de' => $this->de?->value,
-            'para' => $this->para->value,
+            'de' => $this->de
+                ? [
+                    'value' => $this->de->value,
+                    'label' => $this->de->label(),
+                ]
+                : null,
+            'para' => [
+                'value' => $this->para->value,
+                'label' => $this->para->label(),
+            ],
             
             // Usuário que fez a alteração
             'user' => $this->when($this->user, function () {
