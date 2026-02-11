@@ -31,6 +31,8 @@ class ChangeTicketStatusRequest extends FormRequest
     {
         return [
             'status' => ['required', Rule::enum(TicketStatus::class)],
+            'responsavel_id' => ['nullable', 'exists:users,id'],
+            'resolved_at' => ['nullable', 'date'],
         ];
     }
 
@@ -48,6 +50,13 @@ class ChangeTicketStatusRequest extends FormRequest
         $this->offsetUnset('responsavel_id');
         
         $ticket = $this->route('ticket');
+        $novoStatus = $this->status ? TicketStatus::from($this->status) : null;
+
+        if ($novoStatus === TicketStatus::EM_ANDAMENTO && $ticket && !$ticket->responsavel_id) {
+            $this->merge([
+                'responsavel_id' => auth()->id(),
+            ]);
+        }
 
         if ($this->status === TicketStatus::RESOLVIDO->value && $ticket && !$ticket->isStatus(TicketStatus::RESOLVIDO)) {
             $this->merge([

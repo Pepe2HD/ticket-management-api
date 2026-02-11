@@ -40,7 +40,7 @@ class UpdateTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'titulo' => ['sometimes', 'string', 'max:120'],
+            'titulo' => ['sometimes', 'string', 'min:5', 'max:120'],
             'descricao' => ['sometimes', 'string', 'min:20'],
             'prioridade' => ['sometimes', Rule::enum(TicketPriority::class)],
             'responsavel_id' => ['nullable', 'exists:users,id'],
@@ -55,6 +55,7 @@ class UpdateTicketRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'titulo.min' => 'O título deve ter no mínimo 5 caracteres.',
             'titulo.max' => 'O título não pode ter mais de 120 caracteres.',
             'descricao.min' => 'A descrição deve ter no mínimo 20 caracteres.',
             'status.enum' => 'Status inválido. Use: ABERTO, EM_ANDAMENTO ou RESOLVIDO.',

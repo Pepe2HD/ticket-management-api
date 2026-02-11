@@ -25,7 +25,7 @@ class StoreTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'titulo' => ['required', 'string', 'max:120'],
+            'titulo' => ['required', 'string', 'min:5', 'max:120'],
             'descricao' => ['required', 'string', 'min:20'],
             'status' => ['sometimes', Rule::enum(TicketStatus::class)],
             'prioridade' => ['sometimes', Rule::enum(TicketPriority::class)],
@@ -60,6 +60,7 @@ class StoreTicketRequest extends FormRequest
     {
         return [
             'titulo.required' => 'O título é obrigatório.',
+            'titulo.min' => 'O título deve ter no mínimo 5 caracteres.',
             'titulo.max' => 'O título não pode ter mais de 120 caracteres.',
             'descricao.required' => 'A descrição é obrigatória.',
             'descricao.min' => 'A descrição deve ter no mínimo 20 caracteres.',
