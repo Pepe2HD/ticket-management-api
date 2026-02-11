@@ -1,29 +1,104 @@
-# 🎟️ Ticket Management System – Desafio Técnico
+# 🎟️ Sistema de Gestão de Chamados (Tickets)
 
-Este repositório contém a implementação de um **Sistema de Gestão de Chamados (Tickets)**,
-desenvolvido como **desafio técnico para vaga de Desenvolvedor Fullstack**, com foco principal
-no **backend em Laravel**.
+Aplicação para **gestão interna de chamados** com autenticação, regras de negócio, auditoria e API REST. O foco do projeto é entregar um back-end robusto, seguro e fácil de rodar.
 
 ---
 
-## 📌 Objetivo
+## 🧰 Tecnologias Utilizadas
 
-Criar uma aplicação simples de gestão de tickets, com autenticação, regras de negócio claras,
-controle de status e auditoria de mudanças, seguindo boas práticas e organização de código.
-
----
-
-## 🧰 Stack Utilizada
-
-### Backend
 - Laravel 10+
-- PHP 8+
-- Laravel Sanctum (autenticação)
-- Banco de dados: SQLite (padrão)
+- PHP 8.x
+- Banco de dados: SQLite (padrão) ou MySQL
+- Filas (Queues) para processamento assíncrono
+- Policies para autorização (Admin vs Solicitante)
+- API Resources para padronização das respostas
+- Form Requests para validação server-side
 
-### Frontend
-- React Native
-- Expo (template blank)
+---
+
+## ✨ Diferenciais Técnicos
+
+- **Atribuição automática:** ao mudar o status para **EM_ANDAMENTO**, o Admin se torna o responsável pelo ticket.
+- **Auditoria completa:** mudanças de status são registradas em tabela de logs.
+- **Processamento assíncrono:** notificações são enviadas via **Queue** ao resolver um ticket.
+- **Segurança e permissões:** controle de acesso via **Laravel Policies**.
+
+---
+
+## ✅ Requisitos de Sistema
+
+- PHP 8.x
+- Composer
+- Extensões PHP comuns para Laravel (pdo, sqlite, openssl, mbstring, json, tokenizer)
+
+---
+
+## 🚀 Instalação e Setup (Backend)
+
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+### Migrations e Seeds
+
+```bash
+php artisan migrate --seed
+```
+
+### Rodar a API
+
+```bash
+php artisan serve
+```
+
+### Rodar a Fila (Queue)
+
+```bash
+php artisan queue:work
+```
+
+---
+
+## 📱 Frontend (React Native)
+
+```bash
+cd frontend
+npm install
+npm run start
+```
+
+> O app Expo sera aberto no navegador e voce pode rodar no emulador ou no dispositivo fisico (Via aplicativo Expo Go por URL ou QR Code).
+
+---
+
+## 🔐 Credenciais de Teste
+
+| Perfil | Email | Senha |
+| --- | --- | --- |
+| Admin | admin@test.com | password |
+| Solicitante | user@test.com | password |
+
+---
+
+## 🔌 Endpoints Principais (API)
+
+- `GET /api/tickets` - Listagem (Filtros: `status`, `prioridade`, `search`)
+- `POST /api/tickets` - Criação (Validação: 5-120 caracteres para título)
+- `PATCH /api/tickets/{id}/status` - Atualização de status e atribuição de responsável
+- `DELETE /api/tickets/{id}` - Remoção lógica (Soft Delete)
+
+> Todas as rotas estao protegidas por autenticacao (Sanctum/token).
+
+---
+
+## 🧪 Testes
+
+```bash
+php artisan test
+```
 
 ---
 
@@ -34,8 +109,4 @@ controle de status e auditoria de mudanças, seguindo boas práticas e organiza�
 ├── backend/    # API Laravel
 ├── frontend/   # App React Native (Expo)
 └── README.md
-
-
-## 📁 Status
-
-Em desenvolvimento
+```
