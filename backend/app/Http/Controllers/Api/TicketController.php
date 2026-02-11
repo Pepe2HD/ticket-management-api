@@ -91,7 +91,9 @@ class TicketController extends Controller
             DB::beginTransaction();
 
             // Cria o ticket com dados validados
-            $ticket = Ticket::create($request->validated());
+            $payload = $request->validated();
+            $payload['solicitante_id'] = auth()->id();
+            $ticket = Ticket::create($payload);
 
             // Carrega relacionamentos para retornar completo
             $ticket->load(['solicitante', 'responsavel']);
