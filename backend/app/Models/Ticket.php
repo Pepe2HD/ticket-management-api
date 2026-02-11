@@ -26,7 +26,6 @@ class Ticket extends Model
         'prioridade',
         'solicitante_id',
         'responsavel_id',
-        'resolved_at',
     ];
 
     /**
@@ -86,6 +85,35 @@ class Ticket extends Model
         return $query->where('prioridade', $prioridade->value);
     }
 
+    public function scopeSearch($query, ?string $term)
+    {
+        if (!$term) {
+            return $query;
+        }
+
+        $search = trim($term);
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('titulo', 'like', "%{$search}%")
+              ->orWhere('descricao', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        return $query
+            ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->when($filters['prioridade'] ?? null, fn ($q, $prioridade) => $q->where('prioridade', $prioridade))
+            ->search($filters['q'] ?? null);
+    }
+
+    public function scopeOrderByStatusPriority($query)
+    {
+        return $query->orderByRaw(
+            "CASE status WHEN 'ABERTO' THEN 1 WHEN 'EM_ANDAMENTO' THEN 2 WHEN 'RESOLVIDO' THEN 3 ELSE 4 END"
+        );
+    }
+
     public function scopeDoSolicitante($query, int $userId)
     {
         return $query->where('solicitante_id', $userId);
@@ -100,14 +128,14 @@ class Ticket extends Model
      * Métodos auxiliares para verificação de status.
      */
     public function isStatus(TicketStatus $status): bool
-{
-    return $this->status === $status;
-}
+    {
+        return $this->status === $status;
+    }
 
-public function isPrioridade(TicketPriority $prioridade): bool
-{
-    return $this->prioridade === $prioridade;
-}
+    public function isPrioridade(TicketPriority $prioridade): bool
+    {
+        return $this->prioridade === $prioridade;
+    }
 
 
     /**
