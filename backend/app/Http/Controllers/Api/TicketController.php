@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Tickets\ChangeTicketStatusAction;
+use App\Actions\Tickets\CreateTicketAction;
+use App\Actions\Tickets\UpdateTicketAction;
 use App\Enums\TicketStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeTicketStatusRequest;
@@ -9,15 +12,19 @@ use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
-use App\Models\TicketStatusHistory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
+    public function __construct(
+        private readonly CreateTicketAction $createTicketAction,
+        private readonly UpdateTicketAction $updateTicketAction,
+        private readonly ChangeTicketStatusAction $changeTicketStatusAction
+    ) {
+    }
     /**
      * Lista todos os tickets com filtros opcionais.
      * 
@@ -31,7 +38,7 @@ class TicketController extends Controller
     {
         $this->authorize('viewAny', Ticket::class);
 
-        $query = Ticket::with(['solicitante', 'responsavel']);
+        $query = Ticket::query()->with(['solicitante', 'responsavel']);
 
         // Filtro por visibilidade: admin vê todos, usuário comum vê apenas os seus
         if (!auth()->user()->is_admin) {
@@ -41,28 +48,9 @@ class TicketController extends Controller
             });
         }
 
-        // Filtro opcional por status
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
-        }
-
-        // Filtro opcional por prioridade
-        if ($request->has('prioridade') && $request->prioridade) {
-            $query->where('prioridade', $request->prioridade);
-        }
-
-        // Busca textual por titulo ou descricao
-        if ($request->has('q') && $request->q) {
-            $search = trim($request->q);
-            $query->where(function ($q) use ($search) {
-                $q->where('titulo', 'like', "%{$search}%")
-                  ->orWhere('descricao', 'like', "%{$search}%");
-            });
-        }
-
-        // Ordenação por prioridade de status e data de criação
         $tickets = $query
-            ->orderByRaw("CASE status WHEN 'ABERTO' THEN 1 WHEN 'EM_ANDAMENTO' THEN 2 WHEN 'RESOLVIDO' THEN 3 ELSE 4 END")
+            ->filter($request->only(['status', 'prioridade', 'q']))
+            ->orderByStatusPriority()
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -100,17 +88,10 @@ class TicketController extends Controller
         $this->authorize('create', Ticket::class);
 
         try {
-            DB::beginTransaction();
-
-            // Cria o ticket com dados validados
-            $payload = $request->validated();
-            $payload['solicitante_id'] = auth()->id();
-            $ticket = Ticket::create($payload);
-
-            // Carrega relacionamentos para retornar completo
-            $ticket->load(['solicitante', 'responsavel']);
-
-            DB::commit();
+            $ticket = $this->createTicketAction->execute(
+                $request->validated(),
+                auth()->id()
+            );
 
             Log::info('Ticket criado com sucesso', [
                 'ticket_id' => $ticket->id,
@@ -147,15 +128,7 @@ class TicketController extends Controller
         $this->authorize('update', $ticket);
 
         try {
-            DB::beginTransaction();
-
-            // Atualiza apenas campos permitidos pelo FormRequest
-            $ticket->update($request->validated());
-
-            // Recarrega relacionamentos
-            $ticket->refresh()->load(['solicitante', 'responsavel']);
-
-            DB::commit();
+            $ticket = $this->updateTicketAction->execute($ticket, $request->validated());
 
             Log::info('Ticket atualizado com sucesso', [
                 'ticket_id' => $ticket->id,
@@ -181,7 +154,7 @@ class TicketController extends Controller
     /**
      * Remove (soft delete) um ticket.
      * 
-        * Solicitante pode deletar o próprio ticket, admin pode deletar qualquer ticket
+      * Solicitante pode deletar o próprio ticket, admin pode deletar qualquer ticket
      * Exclusão lógica (soft delete) - dados não são perdidos
      */
     public function destroy(Ticket $ticket): JsonResponse
@@ -189,11 +162,7 @@ class TicketController extends Controller
         $this->authorize('delete', $ticket);
 
         try {
-            DB::beginTransaction();
-
             $ticket->delete();
-
-            DB::commit();
 
             Log::info('Ticket deletado com sucesso', [
                 'ticket_id' => $ticket->id,
@@ -234,31 +203,13 @@ class TicketController extends Controller
         $this->authorize('changeStatus', $ticket);
 
         try {
-            DB::beginTransaction();
-
-            // Captura o status anterior antes da mudança
             $statusAnterior = $ticket->status;
             $novoStatus = TicketStatus::from($request->status);
-
-            // Registra a mudança no histórico
-            TicketStatusHistory::create([
-                'ticket_id' => $ticket->id,
-                'user_id' => auth()->id(),
-                'de' => $statusAnterior,
-                'para' => $novoStatus,
-            ]);
-
-            // Atualiza o ticket com dados validados (inclui resolved_at se aplicável)
-            $ticket->update($request->validated());
-
-            // Recarrega ticket com todos os relacionamentos
-            $ticket->refresh()->load([
-                'solicitante',
-                'responsavel',
-                'statusHistory.user'
-            ]);
-
-            DB::commit();
+            $ticket = $this->changeTicketStatusAction->execute(
+                $ticket,
+                $novoStatus,
+                auth()->id()
+            );
 
             Log::info('Status do ticket alterado com sucesso', [
                 'ticket_id' => $ticket->id,
