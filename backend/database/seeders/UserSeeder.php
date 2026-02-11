@@ -31,14 +31,5 @@ class UserSeeder extends Seeder
                 'is_admin' => false,
             ]
         );
-
-        User::updateOrCreate(
-            ['email' => 'user2@test.com'],
-            [
-                'name' => 'User 2',
-                'password' => Hash::make('password'),
-                'is_admin' => false,
-            ]
-        );
     }
 }
