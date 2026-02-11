@@ -73,17 +73,12 @@ class TicketPolicy
      * 
      * Permite se:
      * - for o solicitante OU admin
-     * - E o ticket estiver com status ABERTO
      * 
      * Soft delete: tickets podem ser recuperados logicamente.
      */
     public function delete(User $user, Ticket $ticket): bool
     {
-        // Verifica se o usuário é autenticado e tem permissão
-        $podeDeleter = $user->id === $ticket->solicitante_id || $this->isAdmin($user);
-
-        // Permite deleção apenas se o ticket está ABERTO
-        return $podeDeleter && $ticket->status === TicketStatus::ABERTO;
+        return $user->id === $ticket->solicitante_id || $this->isAdmin($user);
     }
 
     /**
