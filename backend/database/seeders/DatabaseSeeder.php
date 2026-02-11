@@ -18,5 +18,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call(UserSeeder::class);
+
+        \App\Models\Ticket::factory(10)->create();
     }
 }
