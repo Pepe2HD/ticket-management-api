@@ -38,6 +38,11 @@ class TicketController extends Controller
     {
         $this->authorize('viewAny', Ticket::class);
 
+        Log::info('Listando tickets', [
+            'user_id' => $request->user()->id,
+            'filters' => $request->only(['status', 'prioridade', 'q']),
+        ]);
+
         $query = Ticket::query()->with(['solicitante', 'responsavel']);
 
         // Filtro por visibilidade: admin vê todos, usuário comum vê apenas os seus
@@ -52,7 +57,7 @@ class TicketController extends Controller
             ->filter($request->only(['status', 'prioridade', 'q']))
             ->orderByStatusPriority()
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($request->get('per_page', 15));
 
         return TicketResource::collection($tickets);
     }
@@ -129,7 +134,7 @@ class TicketController extends Controller
       * Solicitante pode deletar o próprio ticket, admin pode deletar qualquer ticket
      * Exclusão lógica (soft delete) - dados não são perdidos
      */
-    public function destroy(Ticket $ticket): JsonResponse
+    public function destroy(Request $request, Ticket $ticket): JsonResponse
     {
         $this->authorize('delete', $ticket);
 
