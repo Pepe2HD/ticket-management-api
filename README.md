@@ -112,7 +112,7 @@ php artisan test
 
 **Total: 17 testes com 38 assertions**
 
-> 📖 Documentação completa dos testes: [`backend/tests/Feature/TICKET_TESTS_README.md`](backend/tests/Feature/TICKET_TESTS_README.md)
+> 📖 Documentação completa dos testes: [`backend/tests/Feature/TICKET_TESTS_README.md`](./backend/tests/Feature/TICKET_TESTS_README.md)
 
 ---
 
