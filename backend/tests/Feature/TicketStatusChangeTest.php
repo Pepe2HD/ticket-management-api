@@ -83,4 +83,96 @@ class TicketStatusChangeTest extends TestCase
             'status' => TicketStatus::RESOLVIDO->value,
         ]);
     }
+
+    public function test_cannot_change_from_em_andamento_to_aberto(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = Ticket::factory()->create([
+            'status' => TicketStatus::EM_ANDAMENTO,
+        ]);
+
+        $this->actingAs($admin, 'sanctum');
+
+        $response = $this->patchJson("/api/tickets/{$ticket->id}/status", [
+            'status' => TicketStatus::ABERTO->value,
+        ]);
+
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors(['status']);
+
+        // Verificar que o status não foi alterado no banco
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'status' => TicketStatus::EM_ANDAMENTO->value,
+        ]);
+    }
+
+    public function test_cannot_change_from_resolvido_to_em_andamento(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = Ticket::factory()->create([
+            'status' => TicketStatus::RESOLVIDO,
+            'resolved_at' => now(),
+        ]);
+
+        $this->actingAs($admin, 'sanctum');
+
+        $response = $this->patchJson("/api/tickets/{$ticket->id}/status", [
+            'status' => TicketStatus::EM_ANDAMENTO->value,
+        ]);
+
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors(['status']);
+
+        // Verificar que o status não foi alterado no banco
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'status' => TicketStatus::RESOLVIDO->value,
+        ]);
+    }
+
+    public function test_can_advance_status_from_aberto_to_em_andamento(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = Ticket::factory()->create([
+            'status' => TicketStatus::ABERTO,
+        ]);
+
+        $this->actingAs($admin, 'sanctum');
+
+        $response = $this->patchJson("/api/tickets/{$ticket->id}/status", [
+            'status' => TicketStatus::EM_ANDAMENTO->value,
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'status' => TicketStatus::EM_ANDAMENTO->value,
+        ]);
+    }
+
+    public function test_can_advance_status_from_em_andamento_to_resolvido(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = Ticket::factory()->create([
+            'status' => TicketStatus::EM_ANDAMENTO,
+            'resolved_at' => null,
+        ]);
+
+        $this->actingAs($admin, 'sanctum');
+
+        $response = $this->patchJson("/api/tickets/{$ticket->id}/status", [
+            'status' => TicketStatus::RESOLVIDO->value,
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'status' => TicketStatus::RESOLVIDO->value,
+        ]);
+
+        $this->assertNotNull($ticket->fresh()->resolved_at);
+    }
 }

@@ -40,10 +40,13 @@ Testes para operações **CRUD básicas** (Create, Read, Update, Delete).
 - ✅ Criar ticket válido
 - ✅ Validação de dados obrigatórios
 - ✅ Soft delete funciona corretamente
+- ✅ Não pode editar ticket que não está ABERTO (403)
+- ✅ Pode editar ticket quando status é ABERTO
 
 **Quando usar:**
 - Testar criação, leitura, atualização e remoção
 - Validar regras de validação de formulários
+- Testar restrições de edição por status
 
 ---
 
@@ -55,9 +58,14 @@ Testes específicos para **mudança de status** de tickets.
 - ✅ Campo `resolved_at` é preenchido ao resolver
 - ✅ Mesmo status não cria log duplicado
 - ✅ Ticket resolvido não pode ter status alterado (422)
+- ✅ Não permite retrocesso: EM_ANDAMENTO → ABERTO (422)
+- ✅ Não permite retrocesso: RESOLVIDO → EM_ANDAMENTO (422)
+- ✅ Permite avanço: ABERTO → EM_ANDAMENTO
+- ✅ Permite avanço: EM_ANDAMENTO → RESOLVIDO
 
 **Quando usar:**
 - Testar transições de status válidas/inválidas
+- Validar hierarquia de status (ABERTO < EM_ANDAMENTO < RESOLVIDO)
 - Validar regras de negócio relacionadas a status
 - Testar histórico de mudanças
 
@@ -110,15 +118,15 @@ $this->actingAs($user, 'sanctum');
 ## 📊 Estatísticas Atuais
 
 ```
-Tests:    17 passed (38 assertions)
-Duration: ~1.7s
+Tests:    23 passed (55 assertions)
+Duration: ~1.9s
 
 Distribuição:
 ├── TicketAuthenticationTest   → 3 testes
 ├── TicketAuthorizationTest    → 3 testes
-├── TicketCrudTest             → 4 testes
+├── TicketCrudTest             → 6 testes
 ├── TicketFilterTest           → 2 testes
-└── TicketStatusChangeTest     → 3 testes
+└── TicketStatusChangeTest     → 7 testes
 ```
 
 ---

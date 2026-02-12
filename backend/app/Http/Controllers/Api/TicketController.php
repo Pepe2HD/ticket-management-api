@@ -87,33 +87,19 @@ class TicketController extends Controller
     {
         $this->authorize('create', Ticket::class);
 
-        try {
-            $ticket = $this->createTicketAction->execute(
-                $request->validated(),
-                auth()->id()
-            );
+        $ticket = $this->createTicketAction->execute(
+            $request->validated(),
+            auth()->id()
+        );
 
-            Log::info('Ticket criado com sucesso', [
-                'ticket_id' => $ticket->id,
-                'solicitante_id' => $ticket->solicitante_id,
-            ]);
+        Log::info('Ticket criado com sucesso', [
+            'ticket_id' => $ticket->id,
+            'solicitante_id' => $ticket->solicitante_id,
+        ]);
 
-            return (new TicketResource($ticket))
-                ->response()
-                ->setStatusCode(201);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Erro ao criar ticket', [
-                'error' => $e->getMessage(),
-                'user_id' => auth()->id(),
-            ]);
-
-            return response()->json([
-                'message' => 'Erro ao criar ticket. Tente novamente.',
-            ], 500);
-        }
+        return (new TicketResource($ticket))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -127,28 +113,14 @@ class TicketController extends Controller
     {
         $this->authorize('update', $ticket);
 
-        try {
-            $ticket = $this->updateTicketAction->execute($ticket, $request->validated());
+        $ticket = $this->updateTicketAction->execute($ticket, $request->validated());
 
-            Log::info('Ticket atualizado com sucesso', [
-                'ticket_id' => $ticket->id,
-                'updated_by' => auth()->id(),
-            ]);
+        Log::info('Ticket atualizado com sucesso', [
+            'ticket_id' => $ticket->id,
+            'updated_by' => auth()->id(),
+        ]);
 
-            return new TicketResource($ticket);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Erro ao atualizar ticket', [
-                'ticket_id' => $ticket->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'message' => 'Erro ao atualizar ticket. Tente novamente.',
-            ], 500);
-        }
+        return new TicketResource($ticket);
     }
 
     /**
@@ -161,28 +133,14 @@ class TicketController extends Controller
     {
         $this->authorize('delete', $ticket);
 
-        try {
-            $ticket->delete();
+        $ticket->delete();
 
-            Log::info('Ticket deletado com sucesso', [
-                'ticket_id' => $ticket->id,
-                'deleted_by' => auth()->id(),
-            ]);
+        Log::info('Ticket deletado com sucesso', [
+            'ticket_id' => $ticket->id,
+            'deleted_by' => auth()->id(),
+        ]);
 
-            return response()->json(null, 204);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Erro ao deletar ticket', [
-                'ticket_id' => $ticket->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'message' => 'Erro ao deletar ticket. Tente novamente.',
-            ], 500);
-        }
+        return response()->json(null, 204);
     }
 
     /**
@@ -198,39 +156,25 @@ class TicketController extends Controller
      * 
      * Retorna ticket atualizado com histórico completo
      */
-    public function changeStatus(ChangeTicketStatusRequest $request, Ticket $ticket): TicketResource
+    public function changeStatus(ChangeTicketStatusRequest $request, Ticket $ticket): TicketResource|JsonResponse
     {
         $this->authorize('changeStatus', $ticket);
 
-        try {
-            $statusAnterior = $ticket->status;
-            $novoStatus = TicketStatus::from($request->status);
-            $ticket = $this->changeTicketStatusAction->execute(
-                $ticket,
-                $novoStatus,
-                auth()->id()
-            );
+        $statusAnterior = $ticket->status;
+        $novoStatus = TicketStatus::from($request->status);
+        $ticket = $this->changeTicketStatusAction->execute(
+            $ticket,
+            $novoStatus,
+            auth()->id()
+        );
 
-            Log::info('Status do ticket alterado com sucesso', [
-                'ticket_id' => $ticket->id,
-                'status_anterior' => $statusAnterior->value,
-                'novo_status' => $novoStatus->value,
-                'changed_by' => auth()->id(),
-            ]);
+        Log::info('Status do ticket alterado com sucesso', [
+            'ticket_id' => $ticket->id,
+            'status_anterior' => $statusAnterior->value,
+            'novo_status' => $novoStatus->value,
+            'changed_by' => auth()->id(),
+        ]);
 
-            return new TicketResource($ticket);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Erro ao alterar status do ticket', [
-                'ticket_id' => $ticket->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'message' => 'Erro ao alterar status. Tente novamente.',
-            ], 500);
-        }
+        return new TicketResource($ticket);
     }
 }

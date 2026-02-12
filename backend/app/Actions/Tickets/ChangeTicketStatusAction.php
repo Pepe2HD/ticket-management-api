@@ -20,14 +20,33 @@ class ChangeTicketStatusAction
                 ]);
             }
 
+            // Impede retrocesso de status
+            $statusOrder = [
+                TicketStatus::ABERTO->value => 0,
+                TicketStatus::EM_ANDAMENTO->value => 1,
+                TicketStatus::RESOLVIDO->value => 2,
+            ];
+
+            $currentOrder = $statusOrder[$ticket->status->value] ?? 0;
+            $newOrder = $statusOrder[$newStatus->value] ?? 0;
+
+            if ($newOrder < $currentOrder) {
+                throw ValidationException::withMessages([
+                    'status' => 'Nao e permitido retroceder o status do ticket.'
+                ]);
+            }
+
             $previousStatus = $ticket->status;
 
-            TicketStatusHistory::create([
-                'ticket_id' => $ticket->id,
-                'user_id' => $userId,
-                'de' => $previousStatus,
-                'para' => $newStatus,
-            ]);
+            // Não criar log se o status não mudou
+            if ($previousStatus !== $newStatus) {
+                TicketStatusHistory::create([
+                    'ticket_id' => $ticket->id,
+                    'user_id' => $userId,
+                    'de' => $previousStatus,
+                    'para' => $newStatus,
+                ]);
+            }
 
             $ticket->status = $newStatus;
 

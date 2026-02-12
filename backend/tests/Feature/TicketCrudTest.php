@@ -90,4 +90,55 @@ class TicketCrudTest extends TestCase
         // Verificar que deleted_at não é null
         $this->assertNotNull(Ticket::withTrashed()->find($ticket->id)->deleted_at);
     }
+
+    public function test_cannot_update_ticket_that_is_not_aberto(): void
+    {
+        $user = User::factory()->create();
+        $ticket = Ticket::factory()->create([
+            'solicitante_id' => $user->id,
+            'status' => 'EM_ANDAMENTO',
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        $response = $this->putJson("/api/tickets/{$ticket->id}", [
+            'titulo' => 'Novo título para teste',
+            'descricao' => 'Nova descrição com mais de 20 caracteres.',
+        ]);
+
+        $response->assertForbidden();
+
+        // Verificar que o ticket não foi atualizado
+        $this->assertDatabaseMissing('tickets', [
+            'id' => $ticket->id,
+            'titulo' => 'Novo título para teste',
+        ]);
+    }
+
+    public function test_can_update_ticket_when_status_is_aberto(): void
+    {
+        $user = User::factory()->create();
+        $ticket = Ticket::factory()->create([
+            'solicitante_id' => $user->id,
+            'status' => 'ABERTO',
+            'titulo' => 'Título original',
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        $response = $this->putJson("/api/tickets/{$ticket->id}", [
+            'titulo' => 'Título atualizado',
+            'descricao' => 'Descrição atualizada com mais de 20 caracteres.',
+            'prioridade' => 'ALTA',
+        ]);
+
+        $response->assertOk();
+
+        // Verificar que o ticket foi atualizado
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'titulo' => 'Título atualizado',
+            'prioridade' => 'ALTA',
+        ]);
+    }
 }
