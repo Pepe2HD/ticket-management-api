@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm
   },
   deletedCard: {
-    borderColor: '#E4D4D4',
-    backgroundColor: '#F7F1F1'
+    borderColor: colors.danger,
+    backgroundColor: '#FBEAEA'
   },
   pressed: {
     opacity: 0.9
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: colors.danger,
-    borderColor: '#E4B4B4',
+    borderColor: colors.danger,
     borderWidth: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,

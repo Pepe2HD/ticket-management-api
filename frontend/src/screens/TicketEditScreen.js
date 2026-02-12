@@ -9,13 +9,13 @@ import { colors } from '../styles/colors';
 import { spacing } from '../styles/spacing';
 
 const palette = {
-  softGreen: '#E8F5E9',
-  mediumGreen: '#4CAF50',
-  darkGreen: '#1B5E20',
-  softGreenInput: '#F1FAF2',
-  borderGreen: '#C8E6C9',
-  white: '#FFFFFF',
-  mutedText: '#6B7280'
+  softGreen: colors.background,
+  mediumGreen: colors.accent,
+  darkGreen: colors.primary,
+  softGreenInput: colors.input,
+  borderGreen: colors.border,
+  white: colors.card,
+  mutedText: colors.textSecondary
 };
 
 const TITULO_MAX = 120;
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
     borderRadius: 24,
     padding: spacing.lg,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.12,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
@@ -279,10 +279,10 @@ const styles = StyleSheet.create({
     marginTop: 4
   },
   charCounterWarning: {
-    color: '#F59E0B'
+    color: colors.warning
   },
   charCounterLimit: {
-    color: '#EF4444',
+    color: colors.error,
     fontWeight: '600'
   },
   input: {
@@ -320,14 +320,14 @@ const styles = StyleSheet.create({
   },
   segmentActive: {
     backgroundColor: palette.mediumGreen,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.15,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
     elevation: 4
   },
   segmentPressed: {
-    backgroundColor: '#DFF0E1'
+    backgroundColor: colors.accentSoft
   },
   segmentText: {
     color: palette.darkGreen,
@@ -344,9 +344,9 @@ const styles = StyleSheet.create({
   locked: {
     padding: spacing.md,
     borderRadius: 16,
-    backgroundColor: '#FFF3E0',
+    backgroundColor: colors.accentSoft,
     borderWidth: 1,
-    borderColor: '#FDBA74',
+    borderColor: colors.border,
     marginBottom: spacing.md
   },
   lockedText: {
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: spacing.md,
     alignItems: 'center',
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }]
   },
   primaryButtonDisabled: {
-    backgroundColor: '#C7D7C9',
+    backgroundColor: colors.border,
     shadowOpacity: 0,
     elevation: 0
   },

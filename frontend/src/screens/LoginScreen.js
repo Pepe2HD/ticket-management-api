@@ -11,20 +11,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import FormField from '../components/FormField';
 import ScreenContainer from '../components/ScreenContainer';
 import { useAuth } from '../context/AuthContext';
+import { colors } from '../styles/colors';
 import { spacing } from '../styles/spacing';
 import { typography } from '../styles/typography';
 
 const palette = {
-  greenDark: '#1B5E20',
-  greenMid: '#4CAF50',
-  greenSoft: '#A8E6CF',
-  greenTint: '#F4FBF7',
-  greenInput: '#EAF7F1',
-  textPrimary: '#0F1F18',
-  textMuted: '#5B6B63',
-  borderSoft: '#D7E6DD',
-  errorSoft: '#C45151',
-  white: '#FFFFFF'
+  greenDark: colors.primary,
+  primaryDark: colors.primaryDark,
+  greenMid: colors.accent,
+  greenSoft: colors.accentSoft,
+  greenTint: colors.background,
+  greenInput: colors.input,
+  textPrimary: colors.textPrimary,
+  textMuted: colors.textSecondary,
+  borderSoft: colors.border,
+  errorSoft: colors.error,
+  white: colors.card
 };
 
 export default function LoginScreen() {
@@ -137,7 +139,7 @@ export default function LoginScreen() {
                 colors={
                   loading
                     ? [palette.greenSoft, palette.greenMid]
-                    : [palette.greenMid, palette.greenDark]
+                    : [palette.greenMid, palette.primaryDark]
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -178,12 +180,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginTop: spacing.xxl + spacing.xxl + spacing.xxl + spacing.md,
     textAlign: 'center',
-    color: 'black'
+    color: palette.textPrimary
   },
   subtitle: {
     marginTop: spacing.lg,
     marginBottom: spacing.xl + spacing.xl + spacing.xl,
-    color: 'rgb(0, 0, 0)',
+    color: palette.textPrimary,
     fontSize: 19,
     textAlign: 'center',
     fontWeight:'600'
@@ -195,12 +197,12 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 26,
     padding: spacing.lg,
-    shadowColor: '#09251b',
+    shadowColor: palette.primaryDark,
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.18,
     shadowRadius: 18,
     elevation: 6,
-    backgroundColor: 'rgba(181, 233, 201, 0.95)'
+    backgroundColor: 'rgba(167, 225, 200, 0.92)'
   },
   field: {
     marginBottom: spacing.lg
@@ -211,8 +213,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6
   },
   inputContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderColor: 'rgba(27, 94, 32, 0.25)',
+    backgroundColor: 'rgba(234, 246, 240, 0.95)',
+    borderColor: 'rgba(23, 115, 79, 0.25)',
     borderWidth: 1,
     borderRadius: 18
   },
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     borderRadius: 18,
     overflow: 'hidden',
-    shadowColor: '#0B2A1F',
+    shadowColor: palette.primaryDark,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.16,
     shadowRadius: 12,

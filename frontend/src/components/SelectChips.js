@@ -59,15 +59,15 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.canvas
+    backgroundColor: colors.card
   },
   chipActive: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink
+    backgroundColor: colors.accent,
+    borderColor: colors.accent
   },
   chipDisabled: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
+    backgroundColor: colors.input,
+    borderColor: colors.border,
     opacity: 0.5
   },
   chipText: {
@@ -76,9 +76,9 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   chipTextActive: {
-    color: colors.canvas
+    color: colors.card
   },
   chipTextDisabled: {
-    color: '#9CA3AF'
+    color: colors.muted
   }
 });

@@ -9,13 +9,13 @@ import { colors } from '../styles/colors';
 import { spacing } from '../styles/spacing';
 
 const palette = {
-  softGreen: '#E8F5E9',
-  mediumGreen: '#4CAF50',
-  darkGreen: '#1B5E20',
-  softGreenInput: '#F1FAF2',
-  borderGreen: '#C8E6C9',
-  white: '#FFFFFF',
-  mutedText: '#6B7280'
+  softGreen: colors.background,
+  mediumGreen: colors.accent,
+  darkGreen: colors.primary,
+  softGreenInput: colors.input,
+  borderGreen: colors.border,
+  white: colors.card,
+  mutedText: colors.textSecondary
 };
 
 export default function TicketCreateScreen({ navigation }) {
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
     borderRadius: 24,
     padding: spacing.lg,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.12,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
@@ -252,10 +252,10 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   charCounterWarning: {
-    color: '#F59E0B'
+    color: colors.warning
   },
   charCounterLimit: {
-    color: '#EF4444',
+    color: colors.error,
     fontWeight: '600'
   },
   segmentedBlock: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   segmentActive: {
     backgroundColor: palette.mediumGreen,
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: spacing.md,
     alignItems: 'center',
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },

@@ -9,9 +9,9 @@ const STATUS_MAP = {
 };
 
 const PRIORITY_MAP = {
-  BAIXA: colors.success,
-  MEDIA: colors.warning,
-  ALTA: colors.danger
+  BAIXA: colors.priorityLow,
+  MEDIA: colors.priorityMedium,
+  ALTA: colors.priorityHigh
 };
 
 const normalizeBadge = (value) => {

@@ -17,11 +17,12 @@ import { typography } from '../styles/typography';
 const ALL_OPTION = { label: 'Todos', value: '' };
 
 const palette = {
-  greenDark: '#1B5E20',
-  greenMid: '#4CAF50',
-  greenSoft: '#cae6cc',
-  greenTint: '#F4FBF7',
-  textMuted: '#50545e'
+  greenDark: colors.primary,
+  greenMid: colors.accent,
+  greenSoft: colors.accentSoft,
+  greenTint: colors.background,
+  textMuted: colors.textSecondary,
+  white: colors.card
 };
 
 const DropdownField = ({ label, value, options, isOpen, onToggle, onSelect }) => {
@@ -118,7 +119,7 @@ export default function TicketsListScreen({ navigation }) {
   return (
     <ScreenContainer>
       <LinearGradient
-        colors={['#2E7D32', '#43A047', '#66BB6A']}
+        colors={[colors.primaryDark, colors.primary, colors.accent]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.headerGradient}
@@ -136,7 +137,7 @@ export default function TicketsListScreen({ navigation }) {
               <View style={styles.ticketBadgeWrap}>
                 <Text style={styles.ticketBadgeLabel}>Tickets</Text>
                 <View style={styles.ticketBadge}>
-                  <Feather name="inbox" size={16} color="#fff" />
+                  <Feather name="inbox" size={16} color={palette.white} />
                   <Text style={styles.ticketCount}>{tickets.length}</Text>
                 </View>
               </View>
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     borderRadius: 24,
     marginBottom: spacing.lg,
-    shadowColor: '#1B5E20',
+    shadowColor: palette.greenDark,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -268,19 +269,19 @@ const styles = StyleSheet.create({
     lineHeight: 32
   },
   greetingText: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: 'rgba(255, 255, 255, 0.95)',
     fontSize: 16,
     fontWeight: '500',
     letterSpacing: 0.5
   },
   userName: {
-    color: '#ffffff',
+    color: palette.white,
     fontSize: 24,
     fontWeight: '700',
     letterSpacing: 0.5
   },
   headerSubtitle: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 14,
     fontWeight: '500',
     marginTop: spacing.xs
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   ticketBadgeLabel: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.82)',
     fontSize: 10,
     fontWeight: '600',
     letterSpacing: 0.8,
@@ -300,15 +301,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(255, 255, 255, 0.28)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)'
+    borderColor: 'rgba(255, 255, 255, 0.38)'
   },
   ticketCount: {
-    color: '#ffffff',
+    color: palette.white,
     fontSize: 16,
     fontWeight: '700'
   },
@@ -345,14 +346,14 @@ const styles = StyleSheet.create({
   searchInputWrap: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#6daa7a',
-    backgroundColor: '#d5ebdb',
+    borderColor: colors.border,
+    backgroundColor: '#ccebdb',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    shadowColor: '#0d3f0d',
+    shadowColor: palette.greenDark,
     shadowOpacity: 0.06,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },

@@ -10,15 +10,15 @@ import { colors } from '../styles/colors';
 import { spacing } from '../styles/spacing';
 
 const palette = {
-  softGreen: '#F2F9F4',
-  mediumGreen: '#4CAF50',
-  darkGreen: '#1B5E20',
-  white: '#FFFFFF',
-  mutedText: '#6B7280',
-  borderSoft: '#E3EFE7',
-  successSoft: '#E6F6EA',
-  dangerSoft: '#FDECEA',
-  dangerText: '#B42318'
+  softGreen: colors.background,
+  mediumGreen: colors.accent,
+  darkGreen: colors.primary,
+  white: colors.card,
+  mutedText: colors.textSecondary,
+  borderSoft: colors.border,
+  successSoft: colors.accentSoft,
+  dangerSoft: '#FBEAEA',
+  dangerText: colors.error
 };
 
 export default function TicketStatusScreen({ route, navigation }) {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
     borderRadius: 24,
     padding: spacing.lg,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: spacing.md,
     alignItems: 'center',
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }]
   },
   primaryButtonDisabled: {
-    backgroundColor: '#C7D7C9',
+    backgroundColor: colors.border,
     shadowOpacity: 0,
     elevation: 0
   },
@@ -361,16 +361,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   modalButtonCancel: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.input,
     borderWidth: 1,
-    borderColor: '#E5E7EB'
+    borderColor: colors.border
   },
   modalButtonCancelPressed: {
-    backgroundColor: '#E5E7EB'
+    backgroundColor: colors.accentSoft
   },
   modalButtonConfirm: {
     backgroundColor: palette.mediumGreen,
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },

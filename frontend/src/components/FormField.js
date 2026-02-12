@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     color: colors.ink,
-    backgroundColor: colors.canvas
+    backgroundColor: colors.input
   },
   inputRow: {
     flexDirection: 'row',
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    backgroundColor: colors.canvas
+    backgroundColor: colors.input
   },
   inputRowMultiline: {
     alignItems: 'flex-start'

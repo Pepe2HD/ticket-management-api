@@ -8,11 +8,11 @@ import { spacing } from '../styles/spacing';
 import { typography } from '../styles/typography';
 
 const palette = {
-  greenDark: '#2c8332',
-  greenMid: '#4cb450',
-  greenSoft: '#dae7db',
-  white: '#FFFFFF',
-  textMuted: '#818ba0'
+  greenDark: colors.primary,
+  greenMid: colors.accent,
+  greenSoft: colors.accentSoft,
+  white: colors.card,
+  textMuted: colors.textSecondary
 };
 
 export default function ProfileScreen() {

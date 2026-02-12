@@ -12,12 +12,12 @@ import { spacing } from '../styles/spacing';
 import { typography } from '../styles/typography';
 
 const palette = {
-  softGreen: '#F1F8F4',
-  mediumGreen: '#4CAF50',
-  darkGreen: '#1B5E20',
-  white: '#FFFFFF',
-  mutedText: '#6B7280',
-  borderSoft: '#E3EFE7'
+  softGreen: colors.background,
+  mediumGreen: colors.accent,
+  darkGreen: colors.primary,
+  white: colors.card,
+  mutedText: colors.textSecondary,
+  borderSoft: colors.border
 };
 
 const formatDate = (value) => {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
     borderRadius: 24,
     padding: spacing.lg,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.08,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 6 },
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
     borderRadius: 24,
     padding: spacing.lg,
-    shadowColor: '#0B3D0B',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.06,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     borderColor: palette.mediumGreen,
     borderRadius: 18,
     paddingVertical: spacing.md,
-    shadowColor: '#1B5E20',
+    shadowColor: palette.darkGreen,
     shadowOpacity: 0.2,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 18,
     paddingVertical: spacing.md,
-    backgroundColor: '#E9F6EE'
+    backgroundColor: colors.accentSoft
   },
   secondaryActionText: {
     color: palette.darkGreen,
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
   },
   secondaryActionDisabled: {
     borderColor: colors.border,
-    backgroundColor: '#EEF2EE'
+    backgroundColor: colors.input
   },
   secondaryActionTextDisabled: {
     color: colors.muted
@@ -373,16 +373,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 18,
     paddingVertical: spacing.md,
-    backgroundColor: '#FDECEC'
+    backgroundColor: '#FBEAEA'
   },
   deleteActionText: {
     color: colors.danger,
     fontWeight: '700'
   },
   deletedCard: {
-    borderColor: '#E8C9C9',
+    borderColor: colors.danger,
     borderWidth: 1,
-    backgroundColor: '#F9F0F0'
+    backgroundColor: '#FBEAEA'
   },
   deletedTitle: {
     fontSize: 16,

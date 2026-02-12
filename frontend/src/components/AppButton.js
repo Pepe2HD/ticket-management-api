@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   primary: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink
+    backgroundColor: colors.primary,
+    borderColor: colors.primary
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -73,10 +73,10 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   primaryText: {
-    color: colors.canvas
+    color: colors.card
   },
   ghostText: {
-    color: colors.ink
+    color: colors.textPrimary
   },
   disabledText: {
     color: colors.muted
