@@ -106,11 +106,11 @@ php artisan test
 |---------|------------------|--------|
 | **TicketAuthenticationTest** | Proteção de rotas e autenticação | 401 para não autenticados, token inválido, 404 para recursos inexistentes |
 | **TicketAuthorizationTest** | Permissões e políticas de acesso | Admin deleta qualquer ticket, usuário não deleta ticket de outro (403) |
-| **TicketCrudTest** | Operações CRUD básicas | Criar, listar, validar dados obrigatórios, soft delete |
-| **TicketStatusChangeTest** | Mudança de status e regras de negócio | Histórico de mudanças, `resolved_at`, impedir alteração de ticket resolvido (422) |
+| **TicketCrudTest** | Operações CRUD básicas | Criar, listar, validar dados obrigatórios, soft delete, restrição de edição por status (apenas ABERTO) |
+| **TicketStatusChangeTest** | Mudança de status e regras de negócio | Histórico de mudanças, `resolved_at`, impedir alteração de ticket resolvido (422), hierarquia de status (impedir retrocesso) |
 | **TicketFilterTest** | Filtros e busca | Filtrar por status, buscar por título |
 
-**Total: 17 testes com 38 assertions**
+**Total: 23 testes com 55 assertions**
 
 > 📖 Documentação completa dos testes: [`backend/tests/Feature/TICKET_TESTS_README.md`](./backend/tests/Feature/TICKET_TESTS_README.md)
 

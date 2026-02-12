@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View, Animated } from 'react-native';
 import FormField from '../components/FormField';
 import ScreenContainer from '../components/ScreenContainer';
 import { PRIORITY_OPTIONS } from '../constants/options';
@@ -18,6 +18,9 @@ const palette = {
   mutedText: '#6B7280'
 };
 
+const TITULO_MAX = 120;
+const DESCRICAO_MAX = 500;
+
 export default function TicketEditScreen({ route, navigation }) {
   const { token } = useAuth();
   const { ticketId } = route.params || {};
@@ -29,6 +32,43 @@ export default function TicketEditScreen({ route, navigation }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState('');
+
+  const scaleAnims = useRef({
+    BAIXA: new Animated.Value(1),
+    MEDIA: new Animated.Value(1),
+    ALTA: new Animated.Value(1)
+  }).current;
+
+  const handlePriorityChange = (newPriority) => {
+    setPrioridade(newPriority);
+
+    Animated.sequence([
+      Animated.timing(scaleAnims[newPriority], {
+        toValue: 0.92,
+        duration: 100,
+        useNativeDriver: true
+      }),
+      Animated.spring(scaleAnims[newPriority], {
+        toValue: 1,
+        friction: 4,
+        tension: 150,
+        useNativeDriver: true
+      })
+    ]).start();
+  };
+
+  useEffect(() => {
+    PRIORITY_OPTIONS.forEach(({ value }) => {
+      if (value !== prioridade) {
+        Animated.spring(scaleAnims[value], {
+          toValue: 1,
+          friction: 4,
+          tension: 150,
+          useNativeDriver: true
+        }).start();
+      }
+    });
+  }, [prioridade]);
 
   useEffect(() => {
     const load = async () => {
@@ -51,7 +91,8 @@ export default function TicketEditScreen({ route, navigation }) {
   }, [ticketId, token]);
 
   const handleSave = async () => {
-    if (!ticket || ticket.status !== 'ABERTO') return;
+    const status = ticket?.status?.value || ticket?.status;
+    if (!ticket || status !== 'ABERTO') return;
     setSaving(true);
     setError('');
     try {
@@ -101,17 +142,25 @@ export default function TicketEditScreen({ route, navigation }) {
             <Text style={styles.lockedText}>Este ticket não está aberto. A edição está desativada.</Text>
           </View>
         ) : null}
-        <FormField
-          label="Título"
-          value={titulo}
-          onChangeText={setTitulo}
-          placeholder="Título do ticket"
-          containerStyle={styles.field}
-          labelStyle={styles.fieldLabel}
-          inputStyle={[styles.input, focusedField === 'titulo' && styles.inputFocused]}
-          onFocus={() => setFocusedField('titulo')}
-          onBlur={() => setFocusedField('')}
-        />
+        <View style={styles.field}>
+          <FormField
+            label="Título"
+            value={titulo}
+            onChangeText={(text) => text.length <= TITULO_MAX && setTitulo(text)}
+            placeholder="Título do ticket"
+            labelStyle={styles.fieldLabel}
+            inputStyle={[styles.input, focusedField === 'titulo' && styles.inputFocused]}
+            onFocus={() => setFocusedField('titulo')}
+            onBlur={() => setFocusedField('')}
+          />
+          <Text style={[
+            styles.charCounter,
+            titulo.length >= TITULO_MAX * 0.9 && titulo.length < TITULO_MAX && styles.charCounterWarning,
+            titulo.length >= TITULO_MAX && styles.charCounterLimit
+          ]}>
+            {titulo.length}/{TITULO_MAX}
+          </Text>
+        </View>
         <FormField
           label="Descrição"
           value={descricao}
@@ -133,16 +182,23 @@ export default function TicketEditScreen({ route, navigation }) {
               return (
                 <Pressable
                   key={option.value}
-                  onPress={() => setPrioridade(option.value)}
-                  style={({ pressed }) => [
-                    styles.segment,
-                    isActive && styles.segmentActive,
-                    pressed && !isActive && styles.segmentPressed
-                  ]}
+                  onPress={() => handlePriorityChange(option.value)}
+                  style={styles.segmentPressable}
                 >
-                  <Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>
-                    {option.label}
-                  </Text>
+                  {({ pressed }) => (
+                    <Animated.View
+                      style={[
+                        styles.segment,
+                        isActive && styles.segmentActive,
+                        pressed && !isActive && styles.segmentPressed,
+                        { transform: [{ scale: scaleAnims[option.value] }] }
+                      ]}
+                    >
+                      <Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>
+                        {option.label}
+                      </Text>
+                    </Animated.View>
+                  )}
                 </Pressable>
               );
             })}
@@ -164,7 +220,7 @@ export default function TicketEditScreen({ route, navigation }) {
         {saving ? (
           <ActivityIndicator color={palette.white} />
         ) : (
-          <Text style={styles.primaryButtonText}>Save changes</Text>
+          <Text style={styles.primaryButtonText}>Salvar mudanças</Text>
         )}
       </Pressable>
     </ScreenContainer>
@@ -216,6 +272,19 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: palette.darkGreen
   },
+  charCounter: {
+    fontSize: 12,
+    color: palette.mutedText,
+    textAlign: 'right',
+    marginTop: 4
+  },
+  charCounterWarning: {
+    color: '#F59E0B'
+  },
+  charCounterLimit: {
+    color: '#EF4444',
+    fontWeight: '600'
+  },
   input: {
     backgroundColor: palette.softGreenInput,
     borderRadius: 16,
@@ -240,6 +309,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.borderGreen
   },
+  segmentPressable: {
+    flex: 1
+  },
   segment: {
     flex: 1,
     paddingVertical: spacing.sm,
@@ -247,7 +319,12 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   segmentActive: {
-    backgroundColor: palette.mediumGreen
+    backgroundColor: palette.mediumGreen,
+    shadowColor: '#0B3D0B',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4
   },
   segmentPressed: {
     backgroundColor: '#DFF0E1'

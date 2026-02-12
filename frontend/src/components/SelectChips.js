@@ -10,13 +10,23 @@ export default function SelectChips({ label, options, value, onChange }) {
       <View style={styles.row}>
         {options.map((option) => {
           const active = option.value === value;
+          const disabled = option.disabled || false;
           return (
             <Pressable
               key={option.value}
-              onPress={() => onChange(option.value)}
-              style={[styles.chip, active && styles.chipActive]}
+              onPress={() => !disabled && onChange(option.value)}
+              style={[
+                styles.chip,
+                active && styles.chipActive,
+                disabled && styles.chipDisabled
+              ]}
+              disabled={disabled}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>
+              <Text style={[
+                styles.chipText,
+                active && styles.chipTextActive,
+                disabled && styles.chipTextDisabled
+              ]}>
                 {option.label}
               </Text>
             </Pressable>
@@ -55,6 +65,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ink,
     borderColor: colors.ink
   },
+  chipDisabled: {
+    backgroundColor: '#F3F4F6',
+    borderColor: '#E5E7EB',
+    opacity: 0.5
+  },
   chipText: {
     color: colors.ink,
     fontWeight: '600',
@@ -62,5 +77,8 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     color: colors.canvas
+  },
+  chipTextDisabled: {
+    color: '#9CA3AF'
   }
 });

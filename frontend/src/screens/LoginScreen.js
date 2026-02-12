@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import FormField from '../components/FormField';
 import ScreenContainer from '../components/ScreenContainer';
@@ -59,84 +66,91 @@ export default function LoginScreen() {
 
   return (
     <ScreenContainer scroll={false} contentStyle={styles.screen}>
-      <LinearGradient
-        colors={[palette.greenSoft, palette.greenMid, palette.greenDark]}
-        start={{ x: 0.1, y: 0.1 }}
-        end={{ x: 0.9, y: 1 }}
-        style={styles.hero}
+      <ImageBackground
+        source={require('../../assets/login.png')}
+        resizeMode="cover"
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
       >
-        <Text style={styles.title}>Ticket Desk</Text>
-        <Text style={styles.subtitle}>Faça login para gerenciar seus tickets</Text>
-      </LinearGradient>
+        
 
-      <Animated.View
-        style={[
-          styles.cardWrap,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: translateAnim }]
-          }
-        ]}
-      >
-        <View style={styles.card}>
-          <FormField
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="exemplo@email.com"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            containerStyle={styles.field}
-            labelStyle={styles.label}
-            inputStyle={[
-              styles.input,
-              focusedField === 'email' && styles.inputFocused
-            ]}
-            onFocus={() => setFocusedField('email')}
-            onBlur={() => setFocusedField('')}
-          />
-          <FormField
-            label="Senha"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Senha"
-            secureTextEntry
-            containerStyle={styles.field}
-            labelStyle={styles.label}
-            inputStyle={[
-              styles.input,
-              focusedField === 'password' && styles.inputFocused
-            ]}
-            onFocus={() => setFocusedField('password')}
-            onBlur={() => setFocusedField('')}
-          />
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          <Pressable
-            onPress={handleLogin}
-            disabled={loading}
-            style={({ pressed }) => [
-              styles.button,
-              pressed && !loading && styles.buttonPressed,
-              loading && styles.buttonDisabled
-            ]}
-          >
-            <LinearGradient
-              colors={
-                loading
-                  ? [palette.greenSoft, palette.greenMid]
-                  : [palette.greenMid, palette.greenDark]
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.buttonGradient}
+        <Animated.View
+          style={[
+            styles.cardWrap,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: translateAnim }]
+            }
+          ]}
+        >
+          <Text style={styles.title}>Ticket Desk</Text>
+          <Text style={styles.subtitle}>Faça login para gerenciar seus tickets</Text>
+           <View style={styles.card}>
+            <FormField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="exemplo@email.com"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              iconName="mail"
+              iconColor={palette.greenDark}
+              containerStyle={styles.field}
+              labelStyle={styles.label}
+              inputContainerStyle={[
+                styles.inputContainer,
+                focusedField === 'email' && styles.inputContainerFocused
+              ]}
+              inputStyle={styles.inputText}
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField('')}
+            />
+            <FormField
+              label="Senha"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Senha"
+              secureTextEntry
+              iconName="lock"
+              iconColor={palette.greenDark}
+              containerStyle={styles.field}
+              labelStyle={styles.label}
+              inputContainerStyle={[
+                styles.inputContainer,
+                focusedField === 'password' && styles.inputContainerFocused
+              ]}
+              inputStyle={styles.inputText}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField('')}
+            />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Pressable
+              onPress={handleLogin}
+              disabled={loading}
+              style={({ pressed }) => [
+                styles.button,
+                pressed && !loading && styles.buttonPressed,
+                loading && styles.buttonDisabled
+              ]}
             >
-              <Text style={styles.buttonText}>
-                {loading ? 'Entrando...' : 'Entrar'}
-              </Text>
-            </LinearGradient>
-          </Pressable>
-        </View>
-      </Animated.View>
+              <LinearGradient
+                colors={
+                  loading
+                    ? [palette.greenSoft, palette.greenMid]
+                    : [palette.greenMid, palette.greenDark]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.buttonGradient}
+              >
+                <Text style={styles.buttonText}>
+                  {loading ? 'Entrando...' : 'Entrar'}
+                </Text>
+              </LinearGradient>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </ImageBackground>
     </ScreenContainer>
   );
 }
@@ -147,58 +161,68 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: palette.greenTint
   },
-  hero: {
-    paddingTop: spacing.xxl + spacing.xl,
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32
+  background: {
+    flex: 1
+  },
+  backgroundImage: {
+    opacity: 1,
+    width: '100%',
+    height: '100%'
   },
   title: {
     ...typography.title,
-    fontSize: 30,
+    fontSize: 45,
     color: palette.white,
-    letterSpacing: 0.6
+    fontWeight: '800',
+    fontFamily: 'System',
+    letterSpacing: 1.5,
+    marginTop: spacing.xxl + spacing.xxl + spacing.xxl + spacing.md,
+    textAlign: 'center',
+    color: 'black'
   },
   subtitle: {
     marginTop: spacing.lg,
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: 14,
-    textAlign: 'center'
+    marginBottom: spacing.xl + spacing.xl + spacing.xl,
+    color: 'rgb(0, 0, 0)',
+    fontSize: 19,
+    textAlign: 'center',
+    fontWeight:'600'
   },
   cardWrap: {
     marginTop: -28,
     paddingHorizontal: spacing.lg
   },
   card: {
-    backgroundColor: palette.white,
     borderRadius: 26,
     padding: spacing.lg,
-    shadowColor: '#0B2A1F',
+    shadowColor: '#09251b',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.18,
     shadowRadius: 18,
-    elevation: 6
+    elevation: 6,
+    backgroundColor: 'rgba(181, 233, 201, 0.95)'
   },
   field: {
-    marginBottom: spacing.md
+    marginBottom: spacing.lg
   },
   label: {
     ...typography.label,
     color: palette.textMuted,
     letterSpacing: 0.6
   },
-  input: {
-    backgroundColor: palette.greenInput,
-    borderColor: palette.borderSoft,
-    borderRadius: 16,
-    height: 48
+  inputContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(27, 94, 32, 0.25)',
+    borderWidth: 1,
+    borderRadius: 18
   },
-  inputFocused: {
+  inputContainerFocused: {
     borderColor: palette.greenDark,
     borderWidth: 1.5
+  },
+  inputText: {
+    fontSize: 15,
+    color: palette.textPrimary
   },
   button: {
     marginTop: spacing.sm,

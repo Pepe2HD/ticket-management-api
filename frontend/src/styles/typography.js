@@ -13,8 +13,8 @@ export const typography = {
     lineHeight: 20
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '650',
     textTransform: 'uppercase'
   }
 };

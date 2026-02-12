@@ -33,6 +33,16 @@ export const apiFetch = async (path, options = {}) => {
   const data = isJson ? await response.json() : null;
 
   if (!response.ok) {
+    // Se houver mensagens de validação (422), formata melhor
+    if (response.status === 422 && data?.errors) {
+      const errorMessages = Object.values(data.errors).flat();
+      const error = new Error(errorMessages.join(', '));
+      error.status = response.status;
+      error.data = data;
+      error.validationErrors = data.errors;
+      throw error;
+    }
+
     const error = new Error(data?.message || 'Request failed');
     error.status = response.status;
     error.data = data;

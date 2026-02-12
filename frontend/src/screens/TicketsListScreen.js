@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import AppButton from '../components/AppButton';
 import EmptyState from '../components/EmptyState';
@@ -116,12 +117,36 @@ export default function TicketsListScreen({ navigation }) {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Bem vindo, {user?.name || 'usuário'}</Text>
-          <Text style={styles.subtitle}>Seus tickets aparecem aqui</Text>
+      <LinearGradient
+        colors={['#2E7D32', '#43A047', '#66BB6A']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <View style={styles.greetingWrap}>
+              <Text style={styles.waveEmoji}>👋</Text>
+              <View>
+                <Text style={styles.greetingText}>Olá!</Text>
+                <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
+              </View>
+            </View>
+            {tickets.length > 0 && (
+              <View style={styles.ticketBadgeWrap}>
+                <Text style={styles.ticketBadgeLabel}>Tickets</Text>
+                <View style={styles.ticketBadge}>
+                  <Feather name="inbox" size={16} color="#fff" />
+                  <Text style={styles.ticketCount}>{tickets.length}</Text>
+                </View>
+              </View>
+            )}
+          </View>
+          <Text style={styles.headerSubtitle}>
+            Gerencie seus tickets de forma eficiente
+          </Text>
         </View>
-      </View>
+      </LinearGradient>
 
       <View style={styles.filters}>
         <View style={styles.searchBlock}>
@@ -145,34 +170,40 @@ export default function TicketsListScreen({ navigation }) {
             ) : null}
           </View>
         </View>
-        <DropdownField
-          label="Status"
-          options={[ALL_OPTION, ...STATUS_OPTIONS]}
-          value={status}
-          isOpen={statusOpen}
-          onToggle={() => {
-            setStatusOpen((prev) => !prev);
-            setPriorityOpen(false);
-          }}
-          onSelect={(next) => {
-            setStatus(next);
-            setStatusOpen(false);
-          }}
-        />
-        <DropdownField
-          label="Prioridade"
-          options={[ALL_OPTION, ...PRIORITY_OPTIONS]}
-          value={priority}
-          isOpen={priorityOpen}
-          onToggle={() => {
-            setPriorityOpen((prev) => !prev);
-            setStatusOpen(false);
-          }}
-          onSelect={(next) => {
-            setPriority(next);
-            setPriorityOpen(false);
-          }}
-        />
+        <View style={styles.filtersRow}>
+          <View style={[styles.filterHalf, statusOpen && styles.filterActive]}>
+            <DropdownField
+              label="Status"
+              options={[ALL_OPTION, ...STATUS_OPTIONS]}
+              value={status}
+              isOpen={statusOpen}
+              onToggle={() => {
+                setStatusOpen((prev) => !prev);
+                setPriorityOpen(false);
+              }}
+              onSelect={(next) => {
+                setStatus(next);
+                setStatusOpen(false);
+              }}
+            />
+          </View>
+          <View style={[styles.filterHalf, priorityOpen && styles.filterActive]}>
+            <DropdownField
+              label="Prioridade"
+              options={[ALL_OPTION, ...PRIORITY_OPTIONS]}
+              value={priority}
+              isOpen={priorityOpen}
+              onToggle={() => {
+                setPriorityOpen((prev) => !prev);
+                setStatusOpen(false);
+              }}
+              onSelect={(next) => {
+                setPriority(next);
+                setPriorityOpen(false);
+              }}
+            />
+          </View>
+        </View>
       </View>
 
       <View style={styles.actions}>
@@ -209,25 +240,77 @@ export default function TicketsListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  headerGradient: {
+    borderRadius: 24,
+    marginBottom: spacing.lg,
+    shadowColor: '#1B5E20',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8
+  },
   header: {
-    padding: spacing.lg,
-    borderRadius: 22,
-    backgroundColor: palette.greenSoft,
+    padding: spacing.xl,
+    gap: spacing.md
+  },
+  headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  headerText: {
-    flex: 1,
-    gap: spacing.xs
+  greetingWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md
   },
-  title: {
-    ...typography.section,
-    color: palette.greenDark
+  waveEmoji: {
+    fontSize: 32,
+    lineHeight: 32
   },
-  subtitle: {
-    color: palette.textMuted,
-    fontSize: 13
+  greetingText: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 16,
+    fontWeight: '500',
+    letterSpacing: 0.5
+  },
+  userName: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: 0.5
+  },
+  headerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: spacing.xs
+  },
+  ticketBadgeWrap: {
+    alignItems: 'center',
+    gap: 4
+  },
+  ticketBadgeLabel: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase'
+  },
+  ticketBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)'
+  },
+  ticketCount: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700'
   },
   profileButton: {
     width: 34,
@@ -244,6 +327,17 @@ const styles = StyleSheet.create({
   filters: {
     gap: spacing.sm
   },
+  filtersRow: {
+    flexDirection: 'row',
+    gap: spacing.sm
+  },
+  filterHalf: {
+    flex: 1,
+    zIndex: 1
+  },
+  filterActive: {
+    zIndex: 10
+  },
   searchBlock: {
     gap: spacing.xs,
     marginBottom: spacing.md
@@ -251,8 +345,8 @@ const styles = StyleSheet.create({
   searchInputWrap: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#9fb6a4',
-    backgroundColor: '#F3FAF5',
+    borderColor: '#6daa7a',
+    backgroundColor: '#d5ebdb',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     flexDirection: 'row',
@@ -274,7 +368,9 @@ const styles = StyleSheet.create({
     padding: 2
   },
   dropdownWrap: {
-    gap: spacing.xs
+    gap: spacing.xs,
+    position: 'relative',
+    zIndex: 1
   },
   dropdownLabel: {
     ...typography.label,
@@ -300,12 +396,17 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   },
   dropdownList: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
     marginTop: spacing.xs,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.paper,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    zIndex: 1000
   },
   dropdownItem: {
     paddingHorizontal: spacing.md,
@@ -319,7 +420,9 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: spacing.sm,
-    alignItems: 'center'
+    alignItems: 'center', 
+    marginTop: 1,
+    marginBottom: spacing.xs  
   },
   primaryAction: {
     flex: 1

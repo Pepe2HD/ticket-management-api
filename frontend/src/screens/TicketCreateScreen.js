@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import FormField from '../components/FormField';
 import ScreenContainer from '../components/ScreenContainer';
 import { PRIORITY_OPTIONS } from '../constants/options';
@@ -26,6 +26,49 @@ export default function TicketCreateScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState('');
+
+  const TITULO_MAX = 120;
+  const DESCRICAO_MAX = 500;
+
+  // Animações para cada prioridade
+  const scaleAnims = useRef({
+    BAIXA: new Animated.Value(1),
+    MEDIA: new Animated.Value(1),
+    ALTA: new Animated.Value(1)
+  }).current;
+
+  const handlePriorityChange = (newPriority) => {
+    // Anima o botão clicado com bounce
+    Animated.sequence([
+      Animated.timing(scaleAnims[newPriority], {
+        toValue: 0.92,
+        duration: 100,
+        useNativeDriver: true
+      }),
+      Animated.spring(scaleAnims[newPriority], {
+        toValue: 1,
+        friction: 4,
+        tension: 150,
+        useNativeDriver: true
+      })
+    ]).start();
+
+    setPrioridade(newPriority);
+  };
+
+  useEffect(() => {
+    // Garante que todos os botões não selecionados voltem ao tamanho normal
+    PRIORITY_OPTIONS.forEach((option) => {
+      if (prioridade !== option.value) {
+        Animated.spring(scaleAnims[option.value], {
+          toValue: 1,
+          friction: 6,
+          tension: 100,
+          useNativeDriver: true
+        }).start();
+      }
+    });
+  }, [prioridade]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -60,21 +103,40 @@ export default function TicketCreateScreen({ navigation }) {
       </View>
 
       <View style={styles.card}>
-        <FormField
-          label="Título"
-          value={titulo}
-          onChangeText={setTitulo}
-          placeholder="Título curto do ticket"
-          containerStyle={styles.field}
-          labelStyle={styles.fieldLabel}
-          inputStyle={[styles.input, focusedField === 'titulo' && styles.inputFocused]}
-          onFocus={() => setFocusedField('titulo')}
-          onBlur={() => setFocusedField('')}
-        />
+        <View>
+          <FormField
+            label="Título"
+            value={titulo}
+            onChangeText={(text) => {
+              if (text.length <= TITULO_MAX) {
+                setTitulo(text);
+              }
+            }}
+            placeholder="Título curto do ticket"
+            containerStyle={styles.field}
+            labelStyle={styles.fieldLabel}
+            inputStyle={[styles.input, focusedField === 'titulo' && styles.inputFocused]}
+            onFocus={() => setFocusedField('titulo')}
+            onBlur={() => setFocusedField('')}
+            maxLength={TITULO_MAX}
+          />
+          <Text style={[
+            styles.charCounter,
+            titulo.length > TITULO_MAX * 0.9 && styles.charCounterWarning,
+            titulo.length === TITULO_MAX && styles.charCounterLimit
+          ]}>
+            {titulo.length}/{TITULO_MAX}
+          </Text>
+        </View>
+        
         <FormField
           label="Descrição"
           value={descricao}
-          onChangeText={setDescricao}
+          onChangeText={(text) => {
+            if (text.length <= DESCRICAO_MAX) {
+              setDescricao(text);
+            }
+          }}
           placeholder="Descreva o problema"
           multiline
           containerStyle={styles.field}
@@ -82,6 +144,7 @@ export default function TicketCreateScreen({ navigation }) {
           inputStyle={[styles.input, styles.descriptionInput, focusedField === 'descricao' && styles.inputFocused]}
           onFocus={() => setFocusedField('descricao')}
           onBlur={() => setFocusedField('')}
+          maxLength={DESCRICAO_MAX}
         />
 
         <View style={styles.segmentedBlock}>
@@ -92,16 +155,22 @@ export default function TicketCreateScreen({ navigation }) {
               return (
                 <Pressable
                   key={option.value}
-                  onPress={() => setPrioridade(option.value)}
-                  style={({ pressed }) => [
-                    styles.segment,
-                    isActive && styles.segmentActive,
-                    pressed && !isActive && styles.segmentPressed
-                  ]}
+                  onPress={() => handlePriorityChange(option.value)}
+                  style={styles.segmentPressable}
                 >
-                  <Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>
-                    {option.label}
-                  </Text>
+                  <Animated.View
+                    style={[
+                      styles.segment,
+                      isActive && styles.segmentActive,
+                      {
+                        transform: [{ scale: scaleAnims[option.value] }]
+                      }
+                    ]}
+                  >
+                    <Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>
+                      {option.label}
+                    </Text>
+                  </Animated.View>
                 </Pressable>
               );
             })}
@@ -174,6 +243,21 @@ const styles = StyleSheet.create({
   descriptionInput: {
     height: 150
   },
+  charCounter: {
+    fontSize: 12,
+    color: palette.mutedText,
+    marginTop: -spacing.sm,
+    marginBottom: spacing.md,
+    textAlign: 'right',
+    fontWeight: '500'
+  },
+  charCounterWarning: {
+    color: '#F59E0B'
+  },
+  charCounterLimit: {
+    color: '#EF4444',
+    fontWeight: '600'
+  },
   segmentedBlock: {
     marginBottom: spacing.md
   },
@@ -185,17 +269,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.borderGreen
   },
+  segmentPressable: {
+    flex: 1
+  },
   segment: {
-    flex: 1,
     paddingVertical: spacing.sm,
     borderRadius: 14,
     alignItems: 'center'
   },
   segmentActive: {
-    backgroundColor: palette.mediumGreen
-  },
-  segmentPressed: {
-    backgroundColor: '#DFF0E1'
+    backgroundColor: palette.mediumGreen,
+    shadowColor: '#1B5E20',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3
   },
   segmentText: {
     color: palette.darkGreen,
