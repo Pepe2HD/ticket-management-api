@@ -1,0 +1,104 @@
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ticket-api
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - ticket-network
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=ticket_management
+      - DB_USERNAME=ticket_user
+      - DB_PASSWORD=ticket_password
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: ticket-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - ticket-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: ticket-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ticket_management
+      MYSQL_USER: ticket_user
+      MYSQL_PASSWORD: ticket_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - ticket-network
+
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ticket-queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work --tries=3 --timeout=90
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - ticket-network
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=ticket_management
+      - DB_USERNAME=ticket_user
+      - DB_PASSWORD=ticket_password
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ticket-frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    stdin_open: true
+    tty: true
+    ports:
+      - "19006:19006"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    networks:
+      - ticket-network
+
+networks:
+  ticket-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
