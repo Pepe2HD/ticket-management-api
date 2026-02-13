@@ -88,6 +88,7 @@ services:
     stdin_open: true
     tty: true
     ports:
+      - "8081:8081"
       - "19006:19006"
       - "19000:19000"
       - "19001:19001"

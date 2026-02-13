@@ -12,5 +12,5 @@ ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
 
 EXPOSE 19000 19001 19002 19006
 
-# Expo dev server com suporte a mobile (QR/tunnel) e web
-CMD ["npm", "run", "start", "--", "--tunnel", "--host", "0.0.0.0", "--web"]
+# Expo dev server com suporte a mobile e web
+CMD ["npm", "run", "start", "--", "--lan"]

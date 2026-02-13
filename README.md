@@ -1,257 +1,188 @@
 # 🎟️ Sistema de Gestão de Chamados (Tickets)
 
-Aplicação **completa** para gestão interna de chamados com autenticação, regras de negócio, auditoria, notificações e API REST.
+Sistema completo para gestão de tickets com API REST Laravel + Frontend React Native/Expo.
 
 ---
 
-## ⚡ Destaques da Implementação
+## 📋 Índice
 
-- ✅ **Autenticação Segura**: Laravel Sanctum com tokens SPA
-- ✅ **Autorização**: Policies para controle de acesso granular
-- ✅ **API RESTful**: CRUD completo com validações
-- ✅ **Paginação**: Listagens paginadas (15 itens por página)
-- ✅ **Rate Limiting**: 60 requisições/minuto por usuário
-- ✅ **Testes Abrangentes**: 26 testes com 59 assertions
-- ✅ **Notificações Assíncronas**: Queue para envio de emails
-- ✅ **Docker Ready**: Nginx + MySQL + Queue Worker + Expo (Web/Mobile)
-- ✅ **Health Check**: Endpoint `/api/health` para monitoramento
-- ✅ **CORS Configurável**: Pronto para integração com frontend
+- [Tecnologias](#-tecnologias-utilizadas)
+- [Funcionalidades](#-funcionalidades)
+- [Requisitos](#-requisitos-do-sistema)
+- [Instalação Local](#-opção-1-instalação-local)
+- [Instalação Docker](#-opção-2-docker)
+- [Credenciais de Teste](#-credenciais-de-teste)
+- [Endpoints da API](#-endpoints-da-api)
+- [Testes](#-testes)
 
 ---
 
 ## 🧰 Tecnologias Utilizadas
 
 ### Backend
-- Laravel 10+
-- PHP 8.2+
-- MySQL/SQLite
-- PHPUnit (testes)
+- **Laravel 10+** - Framework PHP
+- **PHP 8.2+**
+- **MySQL 8.0** / SQLite
+- **Laravel Sanctum** - Autenticação
+- **PHPUnit** - Testes automatizados
 
 ### Frontend
-- React Native
-- Expo
-- React Navigation
-- Axios
-- AsyncStorage
+- **React Native** - Framework mobile/web
+- **Expo** - Plataforma de desenvolvimento
+- **React Navigation** - Navegação
+- **Axios** - Cliente HTTP
+- **AsyncStorage** - Persistência local
+
+### DevOps
+- **Docker** & Docker Compose
+- **Nginx** - Servidor web
+- **Queue Worker** - Processamento assíncrono
 
 ---
 
-## ✨ Diferenciais Técnicos
+## ✨ Funcionalidades
 
-### Regras de Negócio
-- **Atribuição automática:** ao mudar o status para **EM_ANDAMENTO**, o Admin se torna o responsável pelo ticket.
-- **Auditoria completa:** mudanças de status são registradas em tabela de logs com timestamp.
-- **Processamento assíncrono:** notificações são enviadas via **Queue** ao resolver um ticket.
-- **Segurança e permissões:** controle de acesso via **Laravel Policies**.
-
-### Otimizações de Performance
-- **Eager Loading**: Previne problema N+1 em relacionamentos
-- **Paginação**: 15 itens por página (configurável via parâmetro `per_page`)
-- **Índices de banco**: Otimizados para queries frequentes
-
-### Segurança
-- **Rate Limiting**: Proteção contra abuso de API (60 req/min)
-- **Logs estruturados**: Contexto completo para auditoria
-- **CORS**: Configurável por ambiente via variável `CORS_ALLOWED_ORIGINS`
+- ✅ **Autenticação JWT** com Laravel Sanctum
+- ✅ **CRUD de Tickets** com validações robustas
+- ✅ **Sistema de Permissões** (Admin/Usuário)
+- ✅ **Mudança de Status** (Aberto → Em Andamento → Resolvido)
+- ✅ **Histórico de Alterações** (auditoria completa)
+- ✅ **Notificações Assíncronas** via Queue
+- ✅ **Paginação** (15 itens/página)
+- ✅ **Rate Limiting** (60 req/min)
+- ✅ **Health Check** (`/api/health`)
+- ✅ **26 Testes Automatizados** com 59 assertions
+- ✅ **Frontend Web e Mobile** com Expo
 
 ---
 
-## ✅ Requisitos de Sistema
+## 📋 Requisitos do Sistema
 
-- PHP 8.2+
-- Composer
-- SQLite ou MySQL
-- Extensões PHP: pdo, openssl, mbstring, json, tokenizer
-- Docker Desktop (Windows/Mac) para rodar via Docker (se quiser)
+### Para instalação local:
+- **PHP 8.2+** com extensões: `pdo`, `openssl`, `mbstring`, `json`, `tokenizer`
+- **Composer** 2.x
+- **Node.js 18+** e **npm**
+- **SQLite** (desenvolvimento) ou **MySQL 8.0+** (produção)
+
+### Para instalação via Docker:
+- **Docker Desktop** (Windows/Mac/Linux)
+- **Docker Compose** 2.x
 
 ---
 
-## 🚀 Instalação e Setup
+## 🚀 Opção 1: Instalação Local
 
-### Opção 1: Local (Desenvolvimento)
+### 1.1. Backend (Laravel API)
+
+```bash
+# Navegar para o diretório do backend
+cd backend
+
+# Instalar dependências do PHP
+composer install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
+
+# Gerar chave da aplicação
+php artisan key:generate
+
+# Configurar banco de dados (SQLite por padrão)
+# O arquivo .env já está configurado para SQLite
+# Para MySQL, edite as variáveis DB_* no .env
+
+# Executar migrações e seeds (criar tabelas e usuários de teste)
+php artisan migrate --seed
+
+# Iniciar servidor de desenvolvimento
+php artisan serve
+# API disponível em: http://localhost:8000
+```
+
+**Em outro terminal**, iniciar o worker de filas:
 
 ```bash
 cd backend
-composer install
-cp .env.example .env
-php artisan key:generate
-
-# Migrations e Seeds
-php artisan migrate --seed
-
-# Rodar API
-php artisan serve
-
-# Em outro terminal, rodar fila
 php artisan queue:work
 ```
 
-### Opção 2: Docker (Recomendado)
+**Testar a API:**
 
 ```bash
-# Subir todos os serviços (Nginx, MySQL, Queue Worker e Frontend Expo)
-docker compose up -d
-
-# Executar migrações
-docker compose exec app php artisan migrate --seed
-
-# Ver logs
-docker compose logs -f app
-
-# Testar health check
+# Health check
 curl http://localhost:8000/api/health
 
-# Rodar testes (opcional)
-docker compose exec app php artisan test
+# Ou no PowerShell:
+Invoke-RestMethod -Uri "http://localhost:8000/api/health"
 ```
 
-Serviços disponíveis:
-- **API**: http://localhost:8000
-- **MySQL**: localhost:3306
-- **Queue Worker**: roda automaticamente
-- **Frontend Web (Expo)**: http://localhost:19006
-- **Frontend Mobile (Expo Go)**: veja o QR Code nos logs
-
-### Frontend (React Native)
+### 1.2. Frontend (React Native/Expo)
 
 ```bash
+# Navegar para o diretório do frontend
 cd frontend
+
+# Instalar dependências
 npm install
 
-# Editar src/services/api.js com URL do backend
-# Exemplo: http://localhost:8000
+# Configurar URL da API
+# Edite o arquivo: src/services/api.js
+# Altere baseURL para: http://localhost:8000/api
+
+# Iniciar Expo
 npm start
+# ou
+npx expo start
 ```
 
-> No Docker, o Expo roda em modo dev server. Para mobile, use o Expo Go e escaneie o QR Code do log:
+**Opções de visualização:**
+
+- **🌐 Web**: Pressione `w` no terminal ou acesse http://localhost:8081
+- **📱 Mobile (Android)**: Pressione `a` ou escaneie o QR code com Expo Go
+- **📱 Mobile (iOS)**: Pressione `i` ou escaneie com a câmera do iPhone
+
+---
+
+## 🐳 Opção 2: Docker
+
+Ambiente completo com Nginx, MySQL, Queue Worker e Frontend Expo pré-configurados.
 
 ```bash
-docker compose logs -f frontend
-```
-
----
-
-## 📚 Documentação
-
-- **Endpoints da API** - Veja seção [🔌 Endpoints](#-endpoints-principais-api)
-- **Testes Automatizados** - Veja seção [🧪 Testes](#-testes)
----
-
-## 🔐 Credenciais de Teste
-
-Após executar `php artisan migrate --seed`:
-
-| Perfil | Email | Senha |
-| --- | --- | --- |
-| Admin | admin@test.com | password |
-| Solicitante | user@test.com | password |
-
----
-
-## 🔌 Endpoints Principais (API)
-
-### Autenticação
-- `POST /api/login` - Autenticar e receber token
-- `POST /api/register` - Criar nova conta
-- `POST /api/logout` - Encerrar sessão
-
-### Tickets
-- `GET /api/tickets` - Listar com filtros (status, priority, per_page, page)
-- `GET /api/tickets/{id}` - Ver detalhes
-- `POST /api/tickets` - Criar novo ticket
-- `PATCH /api/tickets/{id}` - Atualizar (apenas ABERTO)
-- `DELETE /api/tickets/{id}` - Excluir (soft delete)
-- `PATCH /api/tickets/{id}/status` - Mudar status
-
-### Usuários
-- `GET /api/users` - Listar usuários (apenas admin)
-
-### Monitoramento
-- `GET /api/health` - Health check (status, timestamp, service)
-
-> Todas as rotas protegidas exigem header: `Authorization: Bearer {token}`
-
-**Rate Limiting**: 60 requisições/minuto por usuário autenticado
-
----
-
-## 🧪 Testes
-
-```bash
-cd backend
-
-# Executar todos os testes
-php artisan test
-
-# Com detalhes de cobertura
-php artisan test --coverage
-
-# Apenas testes de feature
-php artisan test --testsuite=Feature
-
-# Teste específico
-php artisan test --filter TicketNotificationTest
-```
-
-### Suíte de Testes Disponível
-
-| Arquivo | Responsabilidade | Qtd Testes |
-|---------|------------------|------------|
-| **TicketAuthenticationTest** | Proteção de rotas, tokens | 3 |
-| **TicketAuthorizationTest** | Permissões e policies | 4 |
-| **TicketCrudTest** | CRUD básico e validações | 8 |
-| **TicketStatusChangeTest** | Mudança de status e regras | 6 |
-| **TicketFilterTest** | Filtros e busca | 2 |
-| **TicketNotificationTest** | Notificações assíncronas | 3 |
-
-> 📖 Documentação detalhada: [`backend/tests/Feature/TICKET_TESTS_README.md`](./backend/tests/Feature/TICKET_TESTS_README.md)
-
----
-
-## 🛡️ Segurança
-
-- ✅ Autenticação com tokens (Laravel Sanctum)
-- ✅ Autorização com Policies em cada endpoint
-- ✅ Validação de entrada com Form Requests
-- ✅ Rate Limiting (60 req/min por usuário)
-- ✅ CORS configurável por ambiente
-- ✅ SQL Injection protection (Eloquent ORM)
-- ✅ XSS protection automático
-- ✅ CSRF protection
-
----
-
-## 📊 Performance e Escalabilidade
-
-- ✅ **Eager Loading**: Previne N+1 queries com `with(['solicitante', 'responsavel'])`
-- ✅ **Paginação**: Limita carga de memória e tempo de resposta
-- ✅ **Índices**: Campos de busca/filtro indexados
-- ✅ **Queue Workers**: Processa tarefas pesadas em background
-
-## 🐳 Docker e DevOps
-
-### Estrutura do Docker Compose
-
-```yaml
-services:
-  app       # Laravel API (PHP-FPM)
-  nginx     # Servidor web
-  db        # MySQL 8.0
-  queue     # Worker de filas
-  frontend  # Expo Web (React Native)
-```
-
-```bash
-# Subir ambiente
+# Subir todos os serviços
 docker compose up -d
 
-# Ver logs em tempo real
+# Executar migrações e criar usuários de teste
+docker compose exec app php artisan migrate --seed
+
+# Verificar se os containers estão rodando
+docker ps
+```
+
+**Serviços disponíveis:**
+
+| Serviço | URL/Porta | Descrição |
+|---------|-----------|-----------|
+| **API Backend** | http://localhost:8000 | Laravel API REST |
+| **Frontend Web** | http://localhost:8081 | Expo Web |
+| **MySQL** | localhost:3306 | Banco de dados |
+| **Queue Worker** | - | Processa jobs em background |
+
+**Comandos úteis:**
+
+```bash
+# Ver logs da API
 docker compose logs -f app
 
-# Acessar container
+# Ver logs do frontend
+docker compose logs -f frontend
+
+# Rodar testes
+docker compose exec app php artisan test
+
+# Acessar container da API
 docker compose exec app bash
 
-# Parar tudo
+# Parar todos os serviços
 docker compose down
 
 # Rebuild após mudanças no Dockerfile
@@ -260,7 +191,188 @@ docker compose up -d --build
 
 ---
 
-## 🔧 Troubleshooting
+## 🔐 Credenciais de Teste
+
+Após executar `php artisan migrate --seed`, use estas credenciais:
+
+| Perfil | Email | Senha | Permissões |
+|--------|-------|-------|------------|
+| **Admin** | admin@test.com | password | Pode atribuir tickets e mudar status |
+| **Usuário** | user@test.com | password | Pode criar e visualizar seus tickets |
+
+---
+
+## 🔌 Endpoints da API
+
+## 🔌 Endpoints da API
+
+**Base URL:** `http://localhost:8000/api`
+
+> ⚠️ Rotas protegidas requerem header: `Authorization: Bearer {token}`
+
+### Autenticação (públicas)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/login` | Fazer login e receber token |
+| POST | `/api/register` | Criar nova conta |
+| POST | `/api/logout` | Encerrar sessão (autenticado) |
+
+### Tickets (protegidas)
+
+| Método | Endpoint | Descrição | Parâmetros |
+|--------|----------|-----------|------------|
+| GET | `/api/tickets` | Listar tickets | `?status=ABERTO&priority=ALTA&per_page=15&page=1` |
+| GET | `/api/tickets/{id}` | Ver detalhes de um ticket | - |
+| POST | `/api/tickets` | Criar novo ticket | `title`, `description`, `priority` |
+| PATCH | `/api/tickets/{id}` | Atualizar ticket (só se ABERTO) | `title`, `description`, `priority` |
+| DELETE | `/api/tickets/{id}` | Excluir ticket (soft delete) | - |
+| PATCH | `/api/tickets/{id}/status` | Mudar status | `status` (ABERTO, EM_ANDAMENTO, RESOLVIDO) |
+
+### Usuários (admin apenas)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/users` | Listar todos os usuários |
+
+### Monitoramento (pública)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/health` | Health check do sistema |
+
+**Rate Limiting:** 60 requisições/minuto por usuário autenticado
+
+**Exemplo de requisição:**
+
+```bash
+# Login
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@test.com","password":"password"}'
+
+# Criar ticket (com token)
+curl -X POST http://localhost:8000/api/tickets \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {seu_token}" \
+  -d '{"title":"Problema no login","description":"Erro ao autenticar","priority":"ALTA"}'
+```
+
+---
+
+## 🧪 Testes
+
+### Executar testes
+
+```bash
+# Local
+cd backend
+php artisan test
+
+# Docker
+docker compose exec app php artisan test
+
+# Com cobertura
+php artisan test --coverage
+
+# Teste específico
+php artisan test --filter TicketCrudTest
+```
+
+### Suíte de testes (26 testes, 59 assertions)
+
+| Arquivo | Responsabilidade | Testes |
+|---------|------------------|--------|
+| **TicketAuthenticationTest** | Proteção de rotas e tokens | 3 |
+| **TicketAuthorizationTest** | Permissões (Policies) | 4 |
+| **TicketCrudTest** | CRUD e validações | 8 |
+| **TicketStatusChangeTest** | Mudança de status e regras | 6 |
+| **TicketFilterTest** | Filtros e paginação | 2 |
+| **TicketNotificationTest** | Notificações assíncronas | 3 |
+
+📖 **Documentação completa:** [backend/tests/Feature/TICKET_TESTS_README.md](./backend/tests/Feature/TICKET_TESTS_README.md)
+
+---
+
+## 🎯 Regras de Negócio Implementadas
+
+1. **Atribuição Automática**: Ao mudar status para `EM_ANDAMENTO`, o admin responsável é automaticamente atribuído ao ticket
+2. **Auditoria Completa**: Todas as mudanças de status são registradas na tabela `ticket_status_histories` com timestamp
+3. **Notificações Assíncronas**: Emails são enviados via Queue quando um ticket é resolvido
+4. **Permissões Granulares**: Políticas (Policies) controlam quem pode ver, editar ou deletar cada ticket
+5. **Validações Robustas**: Form Requests validam todos os dados de entrada
+
+---
+
+## 🛡️ Segurança
+
+- ✅ Autenticação JWT com Laravel Sanctum
+- ✅ Autorização via Policies
+- ✅ Validação de entrada (Form Requests)
+- ✅ Rate Limiting (60 req/min)
+- ✅ CORS configurável (`.env`: `CORS_ALLOWED_ORIGINS`)
+- ✅ SQL Injection protection (Eloquent ORM)
+- ✅ XSS protection (sanitização automática)
+- ✅ CSRF protection
+
+---
+
+## 📊 Otimizações de Performance
+
+- **Eager Loading**: Previne N+1 queries (`->with(['solicitante', 'responsavel'])`)
+- **Paginação**: 15 itens/página (configurável: `?per_page=20`)
+- **Índices**: Campos de busca otimizados no banco
+- **Queue Workers**: Tarefas pesadas processadas em background
+- **Cache**: Rotas e configs em cache (produção)
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+ticket-management-api/
+├── backend/                    # API Laravel
+│   ├── app/
+│   │   ├── Actions/           # Lógica de negócio isolada
+│   │   ├── Enums/             # Status e Prioridades (tipagem)
+│   │   ├── Http/
+│   │   │   ├── Controllers/   # Controladores REST
+│   │   │   ├── Requests/      # Validações
+│   │   │   └── Resources/     # Transformação JSON (API Resources)
+│   │   ├── Models/            # Eloquent Models
+│   │   ├── Notifications/     # Emails assíncronos
+│   │   └── Policies/          # Autorização granular
+│   ├── database/
+│   │   ├── factories/         # Factories para testes
+│   │   ├── migrations/        # Schema do banco
+│   │   └── seeders/           # Dados iniciais
+│   ├── routes/api.php         # Definição de rotas REST
+│   ├── tests/Feature/         # 26 testes automatizados
+│   └── Dockerfile
+│
+├── frontend/                   # React Native/Expo
+│   ├── src/
+│   │   ├── components/        # Componentes reutilizáveis
+│   │   ├── context/           # Auth e Theme Context
+│   │   ├── navigation/        # React Navigation
+│   │   ├── screens/           # Telas da aplicação
+│   │   ├── services/          # Cliente API (Axios)
+│   │   └── styles/            # Estilos globais
+│   ├── App.js
+│   ├── package.json
+│   └── Dockerfile
+│
+├── docker/
+│   └── nginx/
+│       └── default.conf       # Config Nginx
+│
+├── docker-compose.yml         # Orquestração Docker
+└── README.md
+```
+
+---
+
+## 🔧 Troubleshooting (Resolução de Problemas)
 
 ### Backend não inicia
 
@@ -270,155 +382,137 @@ php artisan config:clear
 php artisan cache:clear
 php artisan route:clear
 
-# Verificar permissões
+# Verificar permissões (Linux/Mac)
 chmod -R 775 storage bootstrap/cache
+
+# Verificar se a porta 8000 está em uso
+netstat -ano | findstr :8000  # Windows
+lsof -i :8000                 # Linux/Mac
 ```
 
-### Notificações não enviadas
+### Notificações não são enviadas
 
 ```bash
-# Verificar se a fila está rodando
+# Verificar se o queue worker está rodando
 php artisan queue:work
 
-# Ver jobs falhados
+# Ver jobs que falharam
 php artisan queue:failed
 
 # Reprocessar job falhado
 php artisan queue:retry {job_id}
+
+# Reprocessar todos
+php artisan queue:retry all
 ```
 
 ### Erro de CORS no frontend
 
-Configure `CORS_ALLOWED_ORIGINS` no `.env`:
+Configure `CORS_ALLOWED_ORIGINS` no arquivo `.env`:
 
 ```env
-CORS_ALLOWED_ORIGINS=http://localhost:19006,http://localhost:3000
+CORS_ALLOWED_ORIGINS=http://localhost:8081,http://localhost:19006
 ```
 
-### Banco de dados no Docker
-
-SQLite é usado por padrão. Para MySQL via Docker:
+Depois reinicie o servidor:
 
 ```bash
-docker compose up -d
+php artisan config:clear
+php artisan serve
+```
+
+### Frontend não conecta na API
+
+Verifique o arquivo `frontend/src/services/api.js`:
+
+```javascript
+// Para desenvolvimento local
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'  // Backend local
+});
+
+// Para Docker (frontend no container)
+const api = axios.create({
+  baseURL: 'http://host.docker.internal:8000/api'  // Backend no host
+});
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
+## 🚀 Deploy em Produção
 
-```text
-ticket-management-api/
-├── backend/              # API Laravel
-│   ├── app/
-│   │   ├── Actions/      # Lógica de negócio isolada
-│   │   ├── Enums/        # Status e prioridades tipados
-│   │   ├── Http/
-│   │   │   ├── Controllers/
-│   │   │   ├── Requests/    # Validações
-│   │   │   └── Resources/   # Transformação JSON
-│   │   ├── Models/
-│   │   ├── Notifications/
-│   │   └── Policies/     # Autorização granular
-│   ├── database/
-│   │   ├── factories/
-│   │   ├── migrations/
-│   │   └── seeders/
-│   ├── routes/
-│   │   └── api.php       # Rotas REST
-│   ├── tests/
-│   │   └── Feature/      # 26 testes automatizados
-│   └── Dockerfile
-├── frontend/             # App React Native
-│   ├── src/
-│   │   ├── components/
-│   │   ├── context/      # Auth + Theme
-│   │   ├── navigation/
-│   │   ├── screens/
-│   │   └── services/     # Cliente API
-│   └── package.json
-├── docker/
-│   └── nginx/
-│       └── default.conf  # Configuração Nginx
-├── docker-compose.yml
-└── README.md
+### Checklist de produção
+
+- [ ] Configurar `APP_ENV=production`
+- [ ] Desabilitar debug: `APP_DEBUG=false`
+- [ ] Configurar banco MySQL dedicado
+- [ ] Configurar SMTP para emails (`.env`: `MAIL_*`)
+- [ ] Definir domínios permitidos: `CORS_ALLOWED_ORIGINS`
+- [ ] Gerar chave forte: `APP_KEY`
+- [ ] Otimizar Laravel:
+  ```bash
+  php artisan config:cache
+  php artisan route:cache
+  php artisan view:cache
+  ```
+- [ ] Configurar SSL/HTTPS (Let's Encrypt)
+- [ ] Configurar backup automático do banco
+- [ ] Monitorar logs: `storage/logs/laravel.log`
+- [ ] Configurar supervisor para queue workers
+
+### Exemplo de configuração Nginx (produção)
+
+```nginx
+server {
+    listen 80;
+    server_name seu-dominio.com;
+    root /var/www/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
 ```
 
 ---
 
-## 🚢 Deploy em Produção
+## 📝 Notas do Desenvolvedor
 
-Para produção, considere:
-
-- Configurar `APP_ENV=production` e `APP_DEBUG=false`
-- Usar MySQL em servidor dedicado
-- Configurar SMTP para notificações por email
-- Definir `CORS_ALLOWED_ORIGINS` com domínios permitidos
-- Executar `php artisan config:cache` e `php artisan route:cache`
-- Configurar SSL com Let's Encrypt
-- Backup automático do banco de dados
-
----
-
-## 💬 Nota do Desenvolvedor
-
-> **Sobre o Escopo deste Projeto**
+> **Sobre este projeto**
 >
-> Este projeto foi desenvolvido como parte de um desafio técnico. Embora os requisitos básicos 
-> fossem CRUD + autenticação + testes, eu **intencionalmente** adicionei funcionalidades extras para demonstrar:
-> 
-> - 📚 Vontade de aprender e ir além do mínimo esperado
-> - 🔍 Pesquisa sobre boas práticas (paginação, rate limiting, CORS)
-> - 🐳 Interesse em DevOps e facilidade de setup (Docker)
-> - ✅ Comprometimento com qualidade (testes, documentação)
-> 
-> **Tempo total investido**: ~10-12 horas (incluindo pesquisa e documentação)
-> 
-> ⚠️ **Estou aberto a feedback!** Como desenvolvedor em início de carreira, toda crítica construtiva 
-> sobre arquitetura, código ou decisões técnicas será muito bem-vinda e valorizada.
-
----
-
-## 📈 Avaliação do Projeto
-
-### Requisitos Obrigatórios Atendidos ✅
-- ✅ CRUD completo de tickets
-- ✅ Autenticação e autorização
-- ✅ Mudança de status com regras de negócio
-- ✅ Histórico de mudanças auditável
-- ✅ Testes automatizados abrangentes
-- ✅ API REST bem estruturada
-
-### Extras Implementados 🌟
-- ✅ Paginação (essencial para qualquer API)
-- ✅ Rate limiting (segurança básica)
-- ✅ Health check (monitoramento)
-- ✅ Docker Compose (facilita desenvolvimento)
-- ✅ CORS configurável (integração com frontend)
-- ✅ Documentação detalhada
-
----
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Add: nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
+> Este sistema foi desenvolvido como desafio técnico, demonstrando:
+>
+> - 🏗️ **Arquitetura limpa**: Separation of Concerns (Controllers, Actions, Policies)
+> - ✅ **Qualidade de código**: PSR-12, testes automatizados, documentação
+> - 🔒 **Segurança**: Autenticação, autorização, validações, rate limiting
+> - 📦 **DevOps**: Docker, fácil setup, ambiente reproduzível
+> - 📚 **Boas práticas Laravel**: API Resources, Form Requests, Policies, Queues
+>
+> **Tempo de desenvolvimento:** ~10-12 horas
+>
+> **Feedback é bem-vindo!** 🙏 Como desenvolvedor sempre em aprendizado, críticas construtivas sobre arquitetura, código ou decisões técnicas são muito valiosas.
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT.
+Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e distribuir.
 
 ---
 
-## 👨‍💻 Autor
-
-Desenvolvido como parte de um desafio técnico para demonstrar boas práticas de desenvolvimento Laravel e React Native com foco em **código limpo, testável e pronto para produção**.
-
----
-
-**Última atualização**: Fevereiro 2024
+**Última atualização:** Fevereiro 2026
